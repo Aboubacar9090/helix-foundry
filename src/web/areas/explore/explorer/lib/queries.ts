@@ -5,6 +5,8 @@ import {
   countEntries,
   countOf,
   holds,
+  inLoad,
+  inNoLoad,
   isShared,
   nodeInScope,
   scopedLabel,
@@ -692,6 +694,68 @@ export function buildLabelScanRequest(): DynamicQueryRequest {
     { name: "node_total", root: count(nodesAll()) },
     { name: "edge_total", root: count(edgesAll()) },
   ]);
+}
+
+/** One node's in/out degree, as the Graph compute view shows it. */
+export interface DegreeRow {
+  nodeId: string;
+  inDegree: number;
+  outDegree: number;
+  total: number;
+}
+
+/**
+ * Degree of every node in the scope, from two `group_count`s over its edges:
+ * one by `$from` (out-degree), one by `$to` (in-degree). Both read only the
+ * scope's edges, so a load's degree never counts another load's edges.
+ */
+export function buildDegreeDistributionRequest(
+  scope: Scope,
+): DynamicQueryRequest {
+  const edges = {
+    edges_where: {
+      predicate: scope.kind === "load" ? inLoad(scope.id) : inNoLoad(),
+    },
+  };
+  return readRequest("graph_degree", [
+    { name: "out_degrees", root: groupCount(edges, "$from") },
+    { name: "in_degrees", root: groupCount(edges, "$to") },
+  ]);
+}
+
+/** Merges the two degree group counts into one row per node, highest total first. */
+export function parseDegreeDistribution(body: unknown): DegreeRow[] {
+  const data = isRecord(body) ? body : {};
+  const degrees = new Map<string, DegreeRow>();
+  const bump = (value: unknown, side: "in" | "out") => {
+    for (const row of rowsOf(value)) {
+      if (!isRecord(row)) continue;
+      const id = row[side === "out" ? "$from" : "$to"];
+      const count = row.count;
+      if (
+        (typeof id !== "number" && typeof id !== "string") ||
+        typeof count !== "number" ||
+        !Number.isFinite(count)
+      )
+        continue;
+      const key = String(id);
+      const current = degrees.get(key) ?? {
+        nodeId: key,
+        inDegree: 0,
+        outDegree: 0,
+        total: 0,
+      };
+      if (side === "out") current.outDegree = count;
+      else current.inDegree = count;
+      current.total = current.inDegree + current.outDegree;
+      degrees.set(key, current);
+    }
+  };
+  bump(data.out_degrees, "out");
+  bump(data.in_degrees, "in");
+  return [...degrees.values()].sort(
+    (a, b) => b.total - a.total || a.nodeId.localeCompare(b.nodeId),
+  );
 }
 
 function labelCounts(value: unknown): LabelCount[] {

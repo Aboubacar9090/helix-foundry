@@ -34,6 +34,9 @@ const DocumentsPage = lazy(() =>
   EntityPage = lazy(() =>
     import("../explore").then((m) => ({ default: m.OntologyEntityPage })),
   ),
+  ComputePage = lazy(() =>
+    import("../explore").then((m) => ({ default: m.ComputePage })),
+  ),
   RecordsPage = lazy(() =>
     import("../records").then((m) => ({ default: m.RecordsPage })),
   );
@@ -107,6 +110,7 @@ export function ExploreRoutes() {
       <Route path=":ontologyId" element={<OntologyScope explores />}>
         <Route index element={<ExplorerPage />} />
         <Route path="records" element={<RecordsPage />} />
+        <Route path="compute" element={<ComputePage />} />
         <Route path="entities/:entityId" element={<EntityPage />} />
         <Route path="*" element={<NotFound />} />
       </Route>

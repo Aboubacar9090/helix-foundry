@@ -23,7 +23,7 @@ export function ExplorerTop({
   selection,
   children,
 }: {
-  view: "graph" | "records";
+  view: "graph" | "records" | "compute";
   selection?: LoadSelection;
   children?: ReactNode;
 }) {
@@ -41,11 +41,16 @@ export function ExplorerTop({
             options={[
               { value: "records", label: "Records" },
               { value: "graph", label: "Graph" },
+              { value: "compute", label: "Compute" },
             ]}
             onChange={(v) =>
               navigate(
                 selection.link(
-                  v === "records" ? paths.records(o) : paths.explore(o),
+                  v === "records"
+                    ? paths.records(o)
+                    : v === "graph"
+                      ? paths.explore(o)
+                      : paths.compute(o),
                 ),
               )
             }

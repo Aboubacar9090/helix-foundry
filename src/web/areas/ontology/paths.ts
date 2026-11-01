@@ -116,6 +116,8 @@ export const ontologyPaths = {
   // query string (areas/records/model.ts readView).
   records: (ontologyId: string, type?: string) =>
     explorer(ontologyId) + "/records" + (type ? "?type=" + enc(type) : ""),
+  // Its graph compute view: degree and the algorithms that follow.
+  compute: (ontologyId: string) => explorer(ontologyId) + "/compute",
   // Questions about a load: a thread, or a new one, optionally about one
   // entity (its entity id); `new` opens the new thread where a narrow screen
   // would show the threads. The page keeps `?load=` as the other views do.

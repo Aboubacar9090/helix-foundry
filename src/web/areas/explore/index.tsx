@@ -3,10 +3,11 @@
 // entity's page (/explore/:ontologyId/entities/:entityId).
 import "./explore.css";
 import { useParams } from "react-router-dom";
+import { ComputePage } from "./compute-page";
 import { EntityPage } from "./entity";
 import { ExplorerPage } from "./explorer-page";
 
-export { ExplorerPage };
+export { ComputePage, ExplorerPage };
 
 export function OntologyEntityPage() {
   const { entityId = "" } = useParams();

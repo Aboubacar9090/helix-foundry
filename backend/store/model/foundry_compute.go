@@ -24,6 +24,7 @@ const (
 	FoundryGraphComputePhaseComputing FoundryGraphComputePhase = "computing"
 	FoundryGraphComputePhaseWriting   FoundryGraphComputePhase = "writing"
 	FoundryGraphComputePhaseFinishing FoundryGraphComputePhase = "finishing"
+	FoundryGraphComputePhaseDone      FoundryGraphComputePhase = "done"
 )
 
 // FoundryGraphComputeRun is one read-only graph computation over a load.
@@ -51,6 +52,16 @@ type FoundryGraphComputeRun struct {
 	CreatedAt         time.Time                 `json:"createdAt"`
 	StartedAt         *time.Time                `json:"startedAt,omitempty"`
 	FinishedAt        *time.Time                `json:"finishedAt,omitempty"`
+}
+
+// FoundryGraphComputeOutcome is what a worker records when a run ends.
+type FoundryGraphComputeOutcome struct {
+	Status    FoundryGraphComputeStatus
+	NodeCount int64
+	EdgeCount int64
+	TopScore  *float64
+	ResultURI *string
+	Error     *string
 }
 
 // FoundryGraphComputeScore is one node's score in a run.

@@ -32,7 +32,7 @@ CREATE TABLE foundry_graph_compute_runs (
   INDEX foundry_graph_compute_runs_history_idx (ontology_id, created_at, id),
   INDEX foundry_graph_compute_runs_load_idx (load_id, created_at, id),
   CONSTRAINT foundry_graph_compute_runs_status_chk CHECK (status IN ('queued', 'running', 'succeeded', 'failed', 'cancelled')),
-  CONSTRAINT foundry_graph_compute_runs_phase_chk CHECK (phase IN ('queued', 'computing', 'writing', 'finishing'))
+  CONSTRAINT foundry_graph_compute_runs_phase_chk CHECK (phase IN ('queued', 'computing', 'writing', 'finishing', 'done'))
 );
 
 -- One row per node score, ranked for the results table. The full result stays

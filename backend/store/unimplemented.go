@@ -464,6 +464,34 @@ func (u Unimplemented) SumFoundryGraphJobSpend(context.Context, string, time.Tim
 	u.unimplemented("SumFoundryGraphJobSpend")
 	return 0, nil
 }
+func (u Unimplemented) GetFoundryGraphComputeRun(context.Context, string, string) (*model.FoundryGraphComputeRun, error) {
+	u.unimplemented("GetFoundryGraphComputeRun")
+	return nil, nil
+}
+func (u Unimplemented) ListFoundryGraphComputeRuns(context.Context, string, int) ([]*model.FoundryGraphComputeRun, error) {
+	u.unimplemented("ListFoundryGraphComputeRuns")
+	return nil, nil
+}
+func (u Unimplemented) ListFoundryGraphComputeScores(context.Context, string, int, int) ([]model.FoundryGraphComputeScore, error) {
+	u.unimplemented("ListFoundryGraphComputeScores")
+	return nil, nil
+}
+func (u Unimplemented) CreateFoundryGraphComputeRun(context.Context, *model.FoundryGraphComputeRun) error {
+	u.unimplemented("CreateFoundryGraphComputeRun")
+	return nil
+}
+func (u Unimplemented) ClaimFoundryGraphComputeRun(context.Context, string, time.Duration) (*model.FoundryGraphComputeRun, error) {
+	u.unimplemented("ClaimFoundryGraphComputeRun")
+	return nil, nil
+}
+func (u Unimplemented) FinishFoundryGraphComputeRun(context.Context, string, string, model.FoundryGraphComputeOutcome) error {
+	u.unimplemented("FinishFoundryGraphComputeRun")
+	return nil
+}
+func (u Unimplemented) InsertFoundryGraphComputeScores(context.Context, string, []model.FoundryGraphComputeScore) error {
+	u.unimplemented("InsertFoundryGraphComputeScores")
+	return nil
+}
 func (u Unimplemented) CreateFoundryDocumentSet(context.Context, *model.FoundryDocumentSet, int) error {
 	u.unimplemented("CreateFoundryDocumentSet")
 	return nil

@@ -167,6 +167,11 @@ type ReadStore interface {
 	// Foundry model providers: the workspace's setting and its configs
 	GetFoundryAIView(ctx context.Context, workspaceID string) (model.FoundryAIView, error)
 	GetActiveFoundryAIConfig(ctx context.Context, workspaceID string) (*model.FoundryAIConfig, error)
+
+	// Foundry graph compute runs and their scores
+	GetFoundryGraphComputeRun(ctx context.Context, ontologyID, id string) (*model.FoundryGraphComputeRun, error)
+	ListFoundryGraphComputeRuns(ctx context.Context, ontologyID string, limit int) ([]*model.FoundryGraphComputeRun, error)
+	ListFoundryGraphComputeScores(ctx context.Context, runID string, limit, offset int) ([]model.FoundryGraphComputeScore, error)
 }
 
 // Store is ReadStore plus every write.
@@ -175,6 +180,11 @@ type Store interface {
 
 	// WithTx runs fn in a single transaction; the Store passed to fn is tx-scoped.
 	WithTx(ctx context.Context, fn func(Store) error) error
+
+	CreateFoundryGraphComputeRun(ctx context.Context, run *model.FoundryGraphComputeRun) error
+	ClaimFoundryGraphComputeRun(ctx context.Context, workerID string, lease time.Duration) (*model.FoundryGraphComputeRun, error)
+	FinishFoundryGraphComputeRun(ctx context.Context, id, workerID string, outcome model.FoundryGraphComputeOutcome) error
+	InsertFoundryGraphComputeScores(ctx context.Context, runID string, scores []model.FoundryGraphComputeScore) error
 
 	CreateConnector(ctx context.Context, c *model.Connector) error
 	UpdateConnector(ctx context.Context, workspaceID, id string, update model.ConnectorUpdate) error

@@ -39,6 +39,7 @@ import (
 	"github.com/helixdb/helix-foundry/backend/store"
 	foundryaskworker "github.com/helixdb/helix-foundry/backend/workers/foundry-ask-worker"
 	foundrydocumentworker "github.com/helixdb/helix-foundry/backend/workers/foundry-document-worker"
+	foundrygraphcomputeworker "github.com/helixdb/helix-foundry/backend/workers/foundry-graph-compute-worker"
 	foundrygraphworker "github.com/helixdb/helix-foundry/backend/workers/foundry-graph-worker"
 	foundryontologyworker "github.com/helixdb/helix-foundry/backend/workers/foundry-ontology-worker"
 	foundrysyncworker "github.com/helixdb/helix-foundry/backend/workers/foundry-sync-worker"
@@ -64,6 +65,7 @@ var workers = []any{
 	foundrysyncworker.New,
 	foundrydocumentworker.New,
 	foundryontologyworker.New,
+	foundrygraphcomputeworker.New,
 	foundrygraphworker.New,
 	foundryaskworker.New,
 }
@@ -129,7 +131,7 @@ func run(parent context.Context, cfg *Config) error {
 		return err
 	}
 	dbs := local.Databases{Directory: dir, HelixURL: cfg.Local.HelixURL}
-	parts, err := buildWorkers(fcfg, logger, probes, st, awsCfg, dbs)
+	parts, err := buildWorkers(fcfg, logger, probes, st, awsCfg, dbs, local.GraphReader{Directory: directorySvc})
 	if err != nil {
 		_ = f.Stop(ctx)
 		return err
@@ -263,7 +265,7 @@ func (f *front) Stop(ctx context.Context) error {
 // optional ports an install lacks are nil: no plan is sold (PlanReader) and
 // nothing is boosted (Boosts).
 func buildWorkers(cfg *foundryconfig.Config, logger *slog.Logger, probes *probes, st store.Store, awsCfg aws.Config,
-	dbs ports.Databases) ([]component, error) {
+	dbs ports.Databases, graph ports.GraphReader) ([]component, error) {
 	c := dig.New()
 	for _, provide := range []any{
 		func() *foundryconfig.Config { return cfg },
@@ -272,6 +274,7 @@ func buildWorkers(cfg *foundryconfig.Config, logger *slog.Logger, probes *probes
 		func() store.Store { return st },
 		func() aws.Config { return awsCfg },
 		func() ports.Databases { return dbs },
+		func() ports.GraphReader { return graph },
 	} {
 		if err := c.Provide(provide); err != nil {
 			return nil, err

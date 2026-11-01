@@ -6,6 +6,7 @@
 package foundrygraphcomputeworker
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -14,8 +15,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"go.uber.org/dig"
 
+	"github.com/helixdb/helix-foundry/backend/config"
 	"github.com/helixdb/helix-foundry/backend/pkg/id"
 	"github.com/helixdb/helix-foundry/backend/pkg/log"
 	"github.com/helixdb/helix-foundry/backend/ports"
@@ -36,7 +40,9 @@ const (
 type Deps struct {
 	dig.In
 
-	DB foundrystore.Store
+	Cfg *config.Config
+	AWS aws.Config
+	DB  foundrystore.Store
 	// Graph runs read queries on the ontology's database with the API's
 	// checks and limits.
 	Graph ports.GraphReader
@@ -46,6 +52,8 @@ type Deps struct {
 type Task struct {
 	db       foundrystore.Store
 	graph    ports.GraphReader
+	s3       *s3.Client
+	bucket   string
 	workerID string
 }
 
@@ -56,7 +64,16 @@ func New(d Deps) (*Task, error) {
 	if d.Graph == nil {
 		return nil, errors.New("foundry-graph-compute-worker: graph reader not configured")
 	}
-	return &Task{db: d.DB, graph: d.Graph, workerID: id.NewWorkerID()}, nil
+	if d.Cfg == nil || d.Cfg.Foundry.Sync.DataBucket == "" {
+		return nil, errors.New("foundry-graph-compute-worker: data bucket not configured")
+	}
+	return &Task{
+		db:       d.DB,
+		graph:    d.Graph,
+		s3:       s3.NewFromConfig(d.AWS),
+		bucket:   d.Cfg.Foundry.Sync.DataBucket,
+		workerID: id.NewWorkerID(),
+	}, nil
 }
 
 func (t *Task) Name() string { return Name }
@@ -135,6 +152,11 @@ func (t *Task) process(ctx context.Context, run *model.FoundryGraphComputeRun) {
 		fail("parse degree: " + err.Error())
 		return
 	}
+	resultURI, err := t.writeScores(ctx, run.ID, scores)
+	if err != nil {
+		fail("save scores to S3: " + err.Error())
+		return
+	}
 	if err := t.db.InsertFoundryGraphComputeScores(ctx, run.ID, scores); err != nil {
 		fail("save scores: " + err.Error())
 		return
@@ -143,11 +165,47 @@ func (t *Task) process(ctx context.Context, run *model.FoundryGraphComputeRun) {
 		Status:    model.FoundryGraphComputeSucceeded,
 		NodeCount: int64(len(scores)),
 		EdgeCount: edges,
+		ResultURI: &resultURI,
 	}
 	if len(scores) > 0 {
 		outcome.TopScore = &scores[0].Score
 	}
 	t.finish(ctx, run, outcome)
+}
+
+// writeScores stores the full, ranked result as JSON lines and returns its
+// S3 URI. The table in MySQL serves the first pages; this is the complete
+// result.
+func (t *Task) writeScores(ctx context.Context, runID string, scores []model.FoundryGraphComputeScore) (string, error) {
+	data, err := encodeScores(scores)
+	if err != nil {
+		return "", err
+	}
+	key := fmt.Sprintf("graph-compute/%s/scores.jsonl", runID)
+	if _, err := t.s3.PutObject(ctx, &s3.PutObjectInput{
+		Bucket:      aws.String(t.bucket),
+		Key:         aws.String(key),
+		Body:        bytes.NewReader(data),
+		ContentType: aws.String("application/x-ndjson"),
+	}); err != nil {
+		return "", err
+	}
+	return "s3://" + t.bucket + "/" + key, nil
+}
+
+func encodeScores(scores []model.FoundryGraphComputeScore) ([]byte, error) {
+	var buf bytes.Buffer
+	encoder := json.NewEncoder(&buf)
+	for _, score := range scores {
+		if err := encoder.Encode(struct {
+			NodeKey string  `json:"node_key"`
+			Score   float64 `json:"score"`
+			Rank    int     `json:"rank"`
+		}{score.NodeKey, score.Score, score.Rank}); err != nil {
+			return nil, err
+		}
+	}
+	return buf.Bytes(), nil
 }
 
 // finish records the outcome even when the attempt's context has ended, and

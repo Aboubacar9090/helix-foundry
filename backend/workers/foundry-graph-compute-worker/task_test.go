@@ -3,6 +3,8 @@ package foundrygraphcomputeworker
 import (
 	"strings"
 	"testing"
+
+	"github.com/helixdb/helix-foundry/backend/store/model"
 )
 
 func TestDegreeQuery(t *testing.T) {
@@ -14,6 +16,25 @@ func TestDegreeQuery(t *testing.T) {
 	for _, want := range []string{"graph_degree", "out_degrees", "in_degrees", "$from", "$to", "foundry_load", "load-1"} {
 		if !strings.Contains(text, want) {
 			t.Fatalf("degreeQuery does not contain %q: %s", want, text)
+		}
+	}
+}
+
+func TestEncodeScores(t *testing.T) {
+	data, err := encodeScores([]model.FoundryGraphComputeScore{
+		{NodeKey: "a", Score: 2, Rank: 1},
+		{NodeKey: "b", Score: 1, Rank: 2},
+	})
+	if err != nil {
+		t.Fatalf("encodeScores: %v", err)
+	}
+	lines := strings.Split(strings.TrimSpace(string(data)), "\n")
+	if len(lines) != 2 {
+		t.Fatalf("encodeScores wrote %d lines, want 2: %s", len(lines), data)
+	}
+	for _, want := range []string{`"node_key":"a"`, `"score":2`, `"rank":1`} {
+		if !strings.Contains(lines[0], want) {
+			t.Fatalf("first line %q does not contain %q", lines[0], want)
 		}
 	}
 }

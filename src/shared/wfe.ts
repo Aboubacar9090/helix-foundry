@@ -1778,6 +1778,67 @@ export type LoadResponse = { load: FoundryLoad };
 /** helixwfev1ListFoundryLoadsResponse: newest first, every load not deleted yet. */
 export type ListLoadsResponse = { loads?: FoundryLoad[] };
 
+/** v1GraphComputeRun.status: where a read-only run stands in its queue. */
+export type GraphComputeRunStatus =
+  | "queued"
+  | "running"
+  | "succeeded"
+  | "failed"
+  | "cancelled";
+
+/** v1GraphComputeRun.phase: the step a running compute is in. */
+export type GraphComputeRunPhase =
+  | "queued"
+  | "computing"
+  | "writing"
+  | "finishing"
+  | "done";
+
+/** v1GraphComputeRun: one read-only computation over a load. */
+export type GraphComputeRun = {
+  id: string;
+  workspaceId: string;
+  ontologyId: string;
+  loadId: string;
+  algorithm: string;
+  name: string;
+  status?: GraphComputeRunStatus;
+  phase?: GraphComputeRunPhase;
+  // int64, as protojson writes it.
+  nodeCount?: string;
+  edgeCount?: string;
+  topScore?: number;
+  resultUri?: string;
+  error?: string;
+  createdAt?: string | null;
+  startedAt?: string | null;
+  finishedAt?: string | null;
+};
+
+/**
+ * v1StartGraphComputeRequest: POST .../graph/compute. `degree` is the only
+ * algorithm the worker implements for now; the same client_token returns the
+ * same queued run.
+ */
+export type StartGraphComputeRequest = {
+  loadId: string;
+  algorithm: string;
+  name?: string;
+  paramsJson?: string;
+  clientToken?: string;
+};
+
+export type GraphComputeRunResponse = { run: GraphComputeRun };
+export type ListGraphComputesResponse = { runs?: GraphComputeRun[] };
+export type GraphComputeScore = {
+  nodeKey: string;
+  score: number;
+  rank: number;
+};
+export type ListGraphComputeScoresResponse = {
+  scores?: GraphComputeScore[];
+};
+
 /**
  * v1WfeServiceReadFoundryGraphBody: POST .../loads/{loadId}:read. The
  * ontology agent's reads as JSON (src/shared/foundry-read.ts): 1 to 20, run

@@ -1,52 +1,69 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Database } from "lucide-react";
 import { Button, ButtonLink, DataGrid, EmptyState } from "../../kit";
 import { paths } from "../../paths";
+import { useWorkspace } from "../../ui";
 import { useOntology } from "../ontology/scope";
 import { LoadNotice, useLoadSelection } from "../ontology/load-selection";
 import {
-  buildDegreeDistributionRequest,
-  parseDegreeDistribution,
-  type DegreeRow,
-} from "./explorer/lib/queries";
-import { useTenantReads } from "./tenant-reads";
+  graphComputeQuery,
+  graphComputeScoresQuery,
+  startGraphCompute,
+} from "./compute-api";
 import { ExplorerTop } from "./top-bar";
 
 const COLUMNS = [
-  { key: "nodeId", label: "Node" },
-  { key: "inDegree", label: "In", type: "integer" },
-  { key: "outDegree", label: "Out", type: "integer" },
-  { key: "total", label: "Total", type: "integer" },
+  { key: "nodeKey", label: "Node" },
+  { key: "score", label: "Score", type: "number" },
+  { key: "rank", label: "Rank", type: "integer" },
 ];
 
 /**
- * /explore/:ontologyId/compute: the first Graph compute view. It reads the
- * selected load's edges through the existing read API, counts in/out degree
- * per node and shows the busiest nodes. The async compute jobs and the other
- * algorithms follow (see PORT-PLAN-graph-go-nextjs.md).
+ * /explore/:ontologyId/compute: queue a read-only degree computation over
+ * the selected load, poll the run and show its ranked scores. The
+ * foundry-graph-compute-worker computes it; the browser never reads the
+ * graph for compute.
  */
 export function ComputePage() {
-  const { ontology } = useOntology();
+  const { id: ws } = useWorkspace();
+  const { id: o, ontology } = useOntology();
   const selection = useLoadSelection();
-  const reads = useTenantReads();
-  const [rows, setRows] = useState<DegreeRow[] | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const scope = selection.scope;
+  const [runId, setRunId] = useState<string | null>(null);
+  const [starting, setStarting] = useState(false);
+  const [startError, setStartError] = useState<string | null>(null);
+  const load = selection.choice.kind === "load" ? selection.choice.load : null;
 
-  const run = async () => {
-    if (!scope || busy) return;
-    setBusy(true);
-    setError(null);
+  const runQuery = useQuery({
+    ...graphComputeQuery(ws, o, runId ?? ""),
+    enabled: !!runId,
+    refetchInterval: (query) => {
+      const status = query.state.data?.run?.status;
+      return status === "queued" || status === "running" ? 1500 : false;
+    },
+  });
+  const run = runQuery.data?.run;
+  const scoresQuery = useQuery({
+    ...graphComputeScoresQuery(ws, o, runId ?? ""),
+    enabled: !!runId && run?.status === "succeeded",
+  });
+
+  const start = async () => {
+    if (!load || starting) return;
+    setStarting(true);
+    setStartError(null);
     try {
-      const result = await reads.read(buildDegreeDistributionRequest(scope));
-      if (!result.ok) {
-        setError(result.message);
-        return;
-      }
-      setRows(parseDegreeDistribution(result.body));
+      const created = await startGraphCompute(ws, o, {
+        loadId: load.id,
+        algorithm: "degree",
+        name: "Degree",
+        clientToken: crypto.randomUUID(),
+      });
+      setRunId(created.run.id);
+    } catch (e) {
+      setStartError((e as Error).message);
     } finally {
-      setBusy(false);
+      setStarting(false);
     }
   };
 
@@ -67,7 +84,7 @@ export function ComputePage() {
       </div>
     );
 
-  if (!scope)
+  if (!load)
     return (
       <div className="ex-view">
         <ExplorerTop view="compute" selection={selection} />
@@ -84,23 +101,42 @@ export function ComputePage() {
         <section aria-labelledby="compute-degree">
           <h2 id="compute-degree">Degree</h2>
           <p>
-            Counts each node’s in and out edges in the selected load. It reads
-            only that load’s edges and never writes.
+            Queues a read-only degree computation over the selected load. The
+            worker reads only that load’s edges and never writes the graph.
           </p>
           <p>
-            <Button onClick={() => void run()} disabled={busy}>
-              {busy ? "Computing…" : "Run degree"}
-            </Button>{" "}
-            {rows && <span>{rows.length} nodes</span>}
+            <Button onClick={() => void start()} disabled={starting}>
+              {starting ? "Queueing…" : "Queue degree"}
+            </Button>
           </p>
-          {error && <p role="alert">{error}</p>}
+          {startError && <p role="alert">{startError}</p>}
+          {run && (
+            <p>
+              Run <span className="hf-mono">{run.id}</span> · {run.status} (
+              {run.phase}) · {Number(run.nodeCount ?? 0)} nodes ·{" "}
+              {Number(run.edgeCount ?? 0)} edges
+            </p>
+          )}
+          {run?.error && <p role="alert">{run.error}</p>}
+          {run &&
+            (run.status === "queued" || run.status === "running") && (
+              <p>Computing in the background…</p>
+            )}
           <DataGrid
-            rows={rows ?? []}
+            rows={scoresQuery.data?.scores ?? []}
             columns={COLUMNS}
             label="Degree by node"
-            loading={busy}
+            loading={
+              scoresQuery.isPending &&
+              !!runId &&
+              run?.status === "succeeded"
+            }
             maxHeight={520}
-            emptyText="Run degree to see the nodes with the most edges."
+            emptyText={
+              run
+                ? "No scores yet."
+                : "Queue a run to see the nodes with the most edges."
+            }
           />
         </section>
       </div>

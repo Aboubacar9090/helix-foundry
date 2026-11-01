@@ -430,6 +430,28 @@ export const papiRoutes = [
   // Explore: reads of an ontology's database with the user's session, through
   // the query broker. Never query-write.
   { area: "explore", method: "POST", path: "/v1/databases:query-read" },
+  // Explore: read-only graph computations over a load, queued for the
+  // foundry-graph-compute-worker.
+  {
+    area: "explore",
+    method: "POST",
+    path: "/v1/workspaces/{workspaceId}/foundry/ontologies/{ontologyId}/graph/compute",
+  },
+  {
+    area: "explore",
+    method: "GET",
+    path: "/v1/workspaces/{workspaceId}/foundry/ontologies/{ontologyId}/graph/compute",
+  },
+  {
+    area: "explore",
+    method: "GET",
+    path: "/v1/workspaces/{workspaceId}/foundry/ontologies/{ontologyId}/graph/compute/{runId}",
+  },
+  {
+    area: "explore",
+    method: "GET",
+    path: "/v1/workspaces/{workspaceId}/foundry/ontologies/{ontologyId}/graph/compute/{runId}/scores",
+  },
 ] as const satisfies readonly PapiRoute[];
 
 type Compiled = PapiRoute & { compiled: CompiledTemplate };

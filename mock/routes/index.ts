@@ -8,6 +8,7 @@ import { databaseRoutes } from "./databases";
 import { documentRoutes } from "./documents";
 import { enrichmentRoutes } from "./enrichment";
 import { eventSourceRoutes } from "./event-sources";
+import { graphComputeRoutes } from "./graph-compute";
 import { reviewRoutes } from "./reviews";
 import { loadRoutes } from "./loads";
 import { ontologiesRoutes } from "./ontologies";
@@ -35,5 +36,6 @@ export const routes: MockRoute[] = [
   ...enrichmentRoutes,
   ...aiRoutes,
   ...questionRoutes,
+  ...graphComputeRoutes,
   ...databaseRoutes,
 ];

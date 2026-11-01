@@ -5,6 +5,7 @@ package helix.foundry.v1;
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
 import "helix/foundry/v1/types.proto";
 
 option go_package = "github.com/helixdb/helix-foundry/backend/pb/gen/go/helix/foundry/v1;foundryv1";
@@ -256,6 +257,21 @@ service FoundryService {
   }
   rpc StopFoundryLoadEnrichment(StopFoundryLoadEnrichmentRequest) returns (FoundryLoadResponse) {
     option (google.api.http) = { post: "/v1/workspaces/{workspace_id}/foundry/ontologies/{ontology_id}/loads/{id}:stop-enrichment" body: "*" };
+  }
+
+  // Helix Foundry graph compute: read-only computations over a load. A run
+  // is queued and a worker computes it; it never writes the graph.
+  rpc StartGraphCompute(StartGraphComputeRequest) returns (StartGraphComputeResponse) {
+    option (google.api.http) = { post: "/v1/workspaces/{workspace_id}/foundry/ontologies/{ontology_id}/graph/compute" body: "*" };
+  }
+  rpc GetGraphCompute(GetGraphComputeRequest) returns (GetGraphComputeResponse) {
+    option (google.api.http) = { get: "/v1/workspaces/{workspace_id}/foundry/ontologies/{ontology_id}/graph/compute/{run_id}" };
+  }
+  rpc ListGraphComputes(ListGraphComputesRequest) returns (ListGraphComputesResponse) {
+    option (google.api.http) = { get: "/v1/workspaces/{workspace_id}/foundry/ontologies/{ontology_id}/graph/compute" };
+  }
+  rpc ListGraphComputeScores(ListGraphComputeScoresRequest) returns (ListGraphComputeScoresResponse) {
+    option (google.api.http) = { get: "/v1/workspaces/{workspace_id}/foundry/ontologies/{ontology_id}/graph/compute/{run_id}/scores" };
   }
 
   // Helix Foundry usage: the workspace's AI spend this month, by task
@@ -1087,3 +1103,82 @@ message DeleteFoundryReviewDecisionRequest {
   string id = 3;
 }
 message DeleteFoundryReviewDecisionResponse {}
+
+// A read-only graph computation over one load.
+message GraphComputeRun {
+  string id = 1;
+  string workspace_id = 2;
+  string ontology_id = 3;
+  string load_id = 4;
+  // degree, wcc, pagerank and the recipes that follow.
+  string algorithm = 5;
+  string name = 6;
+  // queued, running, succeeded, failed or cancelled.
+  string status = 7;
+  // queued, computing, writing, finishing or done.
+  string phase = 8;
+  int64 node_count = 9;
+  int64 edge_count = 10;
+  // The best score of the run; 0 when it has no rows.
+  double top_score = 11;
+  string result_uri = 12;
+  string error = 13;
+  google.protobuf.Timestamp created_at = 14;
+  google.protobuf.Timestamp started_at = 15;
+  google.protobuf.Timestamp finished_at = 16;
+}
+
+message StartGraphComputeRequest {
+  string workspace_id = 1;
+  string ontology_id = 2;
+  string load_id = 3;
+  string algorithm = 4;
+  string name = 5;
+  // Algorithm parameters, as JSON. Empty for degree.
+  string params_json = 6;
+  // Makes the call idempotent, like a load's.
+  string client_token = 7;
+}
+
+message StartGraphComputeResponse {
+  GraphComputeRun run = 1;
+}
+
+message GetGraphComputeRequest {
+  string workspace_id = 1;
+  string ontology_id = 2;
+  string run_id = 3;
+}
+
+message GetGraphComputeResponse {
+  GraphComputeRun run = 1;
+}
+
+message ListGraphComputesRequest {
+  string workspace_id = 1;
+  string ontology_id = 2;
+  int32 limit = 3;
+}
+
+message ListGraphComputesResponse {
+  repeated GraphComputeRun runs = 1;
+}
+
+message GraphComputeScore {
+  string node_key = 1;
+  double score = 2;
+  int32 rank = 3;
+}
+
+message ListGraphComputeScoresRequest {
+  string workspace_id = 1;
+  string ontology_id = 2;
+  string run_id = 3;
+  int32 limit = 4;
+  int32 offset = 5;
+}
+
+message ListGraphComputeScoresResponse {
+  repeated GraphComputeScore scores = 1;
+}
+

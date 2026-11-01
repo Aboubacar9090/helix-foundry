@@ -242,7 +242,7 @@
     },
     "/v1/workspaces/{workspaceId}/foundry/ai/detect": {
       "post": {
-        "summary": "A local install's only (FAILED_PRECONDITION elsewhere): looks again for\nthe install's default on its machine (FoundryAI.detected), as Settings ›\nAI models opens, so a model pulled since is used without a restart.",
+        "summary": "A local install's only (FAILED_PRECONDITION elsewhere): looks again for\r\nthe install's default on its machine (FoundryAI.detected), as Settings ›\r\nAI models opens, so a model pulled since is used without a restart.",
         "operationId": "FoundryService_DetectFoundryAIDefault",
         "responses": {
           "200": {
@@ -281,7 +281,7 @@
     },
     "/v1/workspaces/{workspaceId}/foundry/ai/ollama-models": {
       "get": {
-        "summary": "A local install's only (FAILED_PRECONDITION elsewhere): the models an\nOllama server has, for the Ollama card's model choice.",
+        "summary": "A local install's only (FAILED_PRECONDITION elsewhere): the models an\r\nOllama server has, for the Ollama card's model choice.",
         "operationId": "FoundryService_ListFoundryOllamaModels",
         "responses": {
           "200": {
@@ -574,7 +574,7 @@
         ]
       },
       "post": {
-        "summary": "Helix Foundry event sources: connectors of kind events, made, changed and\ndeleted through the connector routes. No route sends pieces.",
+        "summary": "Helix Foundry event sources: connectors of kind events, made, changed and\r\ndeleted through the connector routes. No route sends pieces.",
         "operationId": "FoundryService_CreateFoundryEventSourceToken",
         "responses": {
           "200": {
@@ -1074,7 +1074,7 @@
     },
     "/v1/workspaces/{workspaceId}/foundry/documents": {
       "get": {
-        "summary": "Helix Foundry documents and document sets, the workspace's: the Data\narea.",
+        "summary": "Helix Foundry documents and document sets, the workspace's: the Data\r\narea.",
         "operationId": "FoundryService_ListFoundryDocuments",
         "responses": {
           "200": {
@@ -1112,7 +1112,7 @@
           },
           {
             "name": "ids",
-            "description": "Only these documents, uploads or a connector's, deleted or not, in this\norder, on one page: at most 100, with no set_id or page_token\n(INVALID_ARGUMENT otherwise). An id the workspace has no document for\nis left out.",
+            "description": "Only these documents, uploads or a connector's, deleted or not, in this\r\norder, on one page: at most 100, with no set_id or page_token\r\n(INVALID_ARGUMENT otherwise). An id the workspace has no document for\r\nis left out.",
             "in": "query",
             "required": false,
             "type": "array",
@@ -1538,7 +1538,7 @@
         ]
       },
       "post": {
-        "summary": "Helix Foundry ontologies, each bound to one tenant database. Deleting one\nleaves its database as it is.",
+        "summary": "Helix Foundry ontologies, each bound to one tenant database. Deleting one\r\nleaves its database as it is.",
         "operationId": "FoundryService_CreateFoundryOntology",
         "responses": {
           "200": {
@@ -1893,7 +1893,7 @@
     },
     "/v1/workspaces/{workspaceId}/foundry/ontologies/{ontologyId}/documents": {
       "get": {
-        "summary": "An ontology's documents, read only: what its current load holds and\nwhat its reading version's scope holds, each with its extraction there.",
+        "summary": "An ontology's documents, read only: what its current load holds and\r\nwhat its reading version's scope holds, each with its extraction there.",
         "operationId": "FoundryService_ListFoundryOntologyDocuments",
         "responses": {
           "200": {
@@ -1930,7 +1930,7 @@
           },
           {
             "name": "status",
-            "description": "Only those the current load holds so: waiting (not extracted yet),\nextracted, review (extracted, with reviews), duplicate, failed or\nout_of_scope; empty for all.",
+            "description": "Only those the current load holds so: waiting (not extracted yet),\r\nextracted, review (extracted, with reviews), duplicate, failed or\r\nout_of_scope; empty for all.",
             "in": "query",
             "required": false,
             "type": "string"
@@ -1941,7 +1941,7 @@
         ]
       },
       "post": {
-        "summary": "The ontology-scoped document and set writes, and the set list, from\nbefore documents were the workspace's: aliases of the routes above,\nwith the same workspace semantics, kept for the website still on them\nuntil release 2 of workspace documents removes them.",
+        "summary": "The ontology-scoped document and set writes, and the set list, from\r\nbefore documents were the workspace's: aliases of the routes above,\r\nwith the same workspace semantics, kept for the website still on them\r\nuntil release 2 of workspace documents removes them.",
         "operationId": "FoundryService_CreateFoundryOntologyDocument",
         "responses": {
           "200": {
@@ -2245,6 +2245,190 @@
             "in": "path",
             "required": true,
             "type": "string"
+          }
+        ],
+        "tags": [
+          "FoundryService"
+        ]
+      }
+    },
+    "/v1/workspaces/{workspaceId}/foundry/ontologies/{ontologyId}/graph/compute": {
+      "get": {
+        "operationId": "FoundryService_ListGraphComputes",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListGraphComputesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "ontologyId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "FoundryService"
+        ]
+      },
+      "post": {
+        "summary": "Helix Foundry graph compute: read-only computations over a load. A run\r\nis queued and a worker computes it; it never writes the graph.",
+        "operationId": "FoundryService_StartGraphCompute",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1StartGraphComputeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "ontologyId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/FoundryServiceStartGraphComputeBody"
+            }
+          }
+        ],
+        "tags": [
+          "FoundryService"
+        ]
+      }
+    },
+    "/v1/workspaces/{workspaceId}/foundry/ontologies/{ontologyId}/graph/compute/{runId}": {
+      "get": {
+        "operationId": "FoundryService_GetGraphCompute",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetGraphComputeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "ontologyId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "runId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "FoundryService"
+        ]
+      }
+    },
+    "/v1/workspaces/{workspaceId}/foundry/ontologies/{ontologyId}/graph/compute/{runId}/scores": {
+      "get": {
+        "operationId": "FoundryService_ListGraphComputeScores",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListGraphComputeScoresResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "ontologyId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "runId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
           }
         ],
         "tags": [
@@ -3197,8 +3381,7 @@
     },
     "/v1/workspaces/{workspaceId}/foundry/usage": {
       "get": {
-        "summary": "Helix Foundry usage: the workspace's AI spend this month, by task",
-        "description": "The UTC calendar month's spend of loads, of API sources' extraction no\nperson started, and of questions, each with its cap: the sums the caps\ncheck. Spend on the workspace's own model key counts, as Helix's monthly\ncaps count it. Any member may read it.",
+        "summary": "Helix Foundry usage: the workspace's AI spend this month, by task\r\n\r\nThe UTC calendar month's spend of loads, of API sources' extraction no\r\nperson started, and of questions, each with its cap: the sums the caps\r\ncheck. Spend on the workspace's own model key counts, as Helix's monthly\r\ncaps count it. Any member may read it.",
         "operationId": "FoundryService_GetFoundryUsage",
         "responses": {
           "200": {
@@ -3246,21 +3429,21 @@
         },
         "focusJson": {
           "type": "string",
-          "description": "The entity the question is about, {\"type\": ..., \"id\": ...} as reads name\none (the id is its key's encoding or its normalized name), at most 4 KiB;\nempty for none."
+          "description": "The entity the question is about, {\"type\": ..., \"id\": ...} as reads name\r\none (the id is its key's encoding or its normalized name), at most 4 KiB;\r\nempty for none."
         },
         "clientToken": {
           "type": "string"
         }
       },
-      "description": "AskFoundryQuestionRequest queues a question of a ready or partial load\n(FAILED_PRECONDITION otherwise, or when the workspace has spent this\nmonth's questions budget; RESOURCE_EXHAUSTED past its questions an hour).\nThe same client_token returns the question it queued."
+      "description": "AskFoundryQuestionRequest queues a question of a ready or partial load\r\n(FAILED_PRECONDITION otherwise, or when the workspace has spent this\r\nmonth's questions budget; RESOURCE_EXHAUSTED past its questions an hour).\r\nThe same client_token returns the question it queued."
     },
     "FoundryServiceCancelFoundryQuestionBody": {
       "type": "object",
-      "description": "CancelFoundryQuestionRequest ends a queued or running question; a running\none is charged what it reserved. One that ended otherwise is\nFAILED_PRECONDITION."
+      "description": "CancelFoundryQuestionRequest ends a queued or running question; a running\r\none is charged what it reserved. One that ended otherwise is\r\nFAILED_PRECONDITION."
     },
     "FoundryServiceCompleteFoundryDocumentUploadBody": {
       "type": "object",
-      "description": "CompleteFoundryDocumentUploadRequest checks the bytes PUT to the upload\nURL and marks the document uploaded. Every ontology whose live or current\nload reads its set then reads it, where the caller may write the\nontology's database; reads says what happened for each."
+      "description": "CompleteFoundryDocumentUploadRequest checks the bytes PUT to the upload\r\nURL and marks the document uploaded. Every ontology whose live or current\r\nload reads its set then reads it, where the caller may write the\r\nontology's database; reads says what happened for each."
     },
     "FoundryServiceCompleteFoundryOntologyDocumentUploadBody": {
       "type": "object"
@@ -3281,7 +3464,7 @@
       "properties": {
         "name": {
           "type": "string",
-          "description": "1 to 255 characters once trimmed, with no slash, backslash or control\ncharacter; its extension must agree with media_type: .md or .markdown\ntext/markdown, .mdx text/mdx, .txt text/plain, .json application/json,\n.csv text/csv, .tsv text/tab-separated-values, .jsonl or .ndjson\napplication/x-ndjson, .parquet application/vnd.apache.parquet, .pdf\napplication/pdf."
+          "description": "1 to 255 characters once trimmed, with no slash, backslash or control\r\ncharacter; its extension must agree with media_type: .md or .markdown\r\ntext/markdown, .mdx text/mdx, .txt text/plain, .json application/json,\r\n.csv text/csv, .tsv text/tab-separated-values, .jsonl or .ndjson\r\napplication/x-ndjson, .parquet application/vnd.apache.parquet, .pdf\r\napplication/pdf."
         },
         "mediaType": {
           "type": "string"
@@ -3308,11 +3491,11 @@
       "properties": {
         "name": {
           "type": "string",
-          "description": "1 to 120 characters, unique among the workspace's live sets (case and\naccents aside)."
+          "description": "1 to 120 characters, unique among the workspace's live sets (case and\r\naccents aside)."
         },
         "description": {
           "type": "string",
-          "description": "What its documents hold, in the user's words; at most 1000 characters.\nThe ontology agent reads it."
+          "description": "What its documents hold, in the user's words; at most 1000 characters.\r\nThe ontology agent reads it."
         }
       }
     },
@@ -3329,7 +3512,7 @@
           "type": "string"
         }
       },
-      "description": "CreateFoundryLoadRequest writes an agent draft whose status is done into\nthe ontology's database as a new load, beside the loads already there. A\ndelete in progress gives way and resumes after it; FAILED_PRECONDITION while\na load or extract is live, or the month's budget is spent."
+      "description": "CreateFoundryLoadRequest writes an agent draft whose status is done into\r\nthe ontology's database as a new load, beside the loads already there. A\r\ndelete in progress gives way and resumes after it; FAILED_PRECONDITION while\r\na load or extract is live, or the month's budget is spent."
     },
     "FoundryServiceCreateFoundryOntologyBody": {
       "type": "object",
@@ -3340,7 +3523,7 @@
         },
         "tenantId": {
           "type": "string",
-          "description": "A live tenant of one of the workspace's projects, which the caller may\nwrite: one from GET /v1/tenants, or one just made with POST /v1/tenants."
+          "description": "A live tenant of one of the workspace's projects, which the caller may\r\nwrite: one from GET /v1/tenants, or one just made with POST /v1/tenants."
         },
         "clientToken": {
           "type": "string",
@@ -3371,7 +3554,7 @@
           "type": "string"
         }
       },
-      "description": "The ontology-scoped aliases' requests (until release 2 of workspace\ndocuments): as the workspace routes', with the ontology of the route,\nwhich must be a live ontology of the workspace (NOT_FOUND otherwise), as\nbefore documents were the workspace's."
+      "description": "The ontology-scoped aliases' requests (until release 2 of workspace\r\ndocuments): as the workspace routes', with the ontology of the route,\r\nwhich must be a live ontology of the workspace (NOT_FOUND otherwise), as\r\nbefore documents were the workspace's."
     },
     "FoundryServiceCreateFoundryOntologyDocumentSetBody": {
       "type": "object",
@@ -3394,7 +3577,7 @@
     },
     "FoundryServiceDetectFoundryAIDefaultBody": {
       "type": "object",
-      "description": "DetectFoundryAIDefaultRequest looks again for a local install's default;\nit answers the workspace's AI settings, as GetFoundryAI does. FAILED_PRECONDITION\nwhere the install names its default (FOUNDRY_AI_PROVIDER)."
+      "description": "DetectFoundryAIDefaultRequest looks again for a local install's default;\r\nit answers the workspace's AI settings, as GetFoundryAI does. FAILED_PRECONDITION\r\nwhere the install names its default (FOUNDRY_AI_PROVIDER)."
     },
     "FoundryServiceGenerateOntologyBody": {
       "type": "object",
@@ -3408,18 +3591,18 @@
           "items": {
             "type": "string"
           },
-          "description": "The connectors whose synced tables to draft from; empty means all,\nunless no_connectors."
+          "description": "The connectors whose synced tables to draft from; empty means all,\r\nunless no_connectors."
         },
         "documentSetIds": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "The document sets the draft reads, which become its version's scope;\nempty means none. At most 20: INVALID_ARGUMENT past that. Each set's\ntable files that have been read (CSV, TSV, JSON, JSONL, Parquet) are\ntables beside the connectors' (files still being read are left out),\nand its Markdown, MDX and text may be routed to extraction.\nA generation needs at least one source: a synced table, a table file,\nor a set holding text (FAILED_PRECONDITION without one). Tables and\ntable files together count toward the deployment's cap on tables."
+          "description": "The document sets the draft reads, which become its version's scope;\r\nempty means none. At most 20: INVALID_ARGUMENT past that. Each set's\r\ntable files that have been read (CSV, TSV, JSON, JSONL, Parquet) are\r\ntables beside the connectors' (files still being read are left out),\r\nand its Markdown, MDX and text may be routed to extraction.\r\nA generation needs at least one source: a synced table, a table file,\r\nor a set holding text (FAILED_PRECONDITION without one). Tables and\r\ntable files together count toward the deployment's cap on tables."
         },
         "noConnectors": {
           "type": "boolean",
-          "description": "Draft from the document sets alone, with no connector, even when the\nworkspace has some; connector_ids must then be empty (INVALID_ARGUMENT\notherwise)."
+          "description": "Draft from the document sets alone, with no connector, even when the\r\nworkspace has some; connector_ids must then be empty (INVALID_ARGUMENT\r\notherwise)."
         },
         "eventSources": {
           "type": "array",
@@ -3427,15 +3610,15 @@
             "type": "object",
             "$ref": "#/definitions/v1FoundryEventSourcePick"
           },
-          "description": "Event sources to draft from, each with how this ontology reads it.\nconnector_ids names no event source, and its empty default never\nincludes one. Extraction reads the source's own document set, which\ncounts as one of the 20 sets, and needs the source to have a\ntext_field and a synced piece (FAILED_PRECONDITION without either)."
+          "description": "Event sources to draft from, each with how this ontology reads it.\r\nconnector_ids names no event source, and its empty default never\r\nincludes one. Extraction reads the source's own document set, which\r\ncounts as one of the 20 sets, and needs the source to have a\r\ntext_field and a synced piece (FAILED_PRECONDITION without either)."
         },
         "sample": {
           "type": "string",
-          "description": "Foundry's sample company to draft from in place of the AI: \"acme\" is\nthe only one (INVALID_ARGUMENT for another). The generation stores the\nsample's ready-made draft, mapped to this workspace's connection to the\nsample's database, and calls no model. connector_ids must name exactly\nthat connection and document_set_ids exactly the set of the sample's\ndocuments, with no event source (INVALID_ARGUMENT otherwise), and each\nof the sample's tables must be synced (FAILED_PRECONDITION until then)."
+          "description": "Foundry's sample company to draft from in place of the AI: \"acme\" is\r\nthe only one (INVALID_ARGUMENT for another). The generation stores the\r\nsample's ready-made draft, mapped to this workspace's connection to the\r\nsample's database, and calls no model. connector_ids must name exactly\r\nthat connection and document_set_ids exactly the set of the sample's\r\ndocuments, with no event source (INVALID_ARGUMENT otherwise), and each\r\nof the sample's tables must be synced (FAILED_PRECONDITION until then)."
         },
         "loadWhenReady": {
           "type": "boolean",
-          "description": "Once the draft is stored, while the ontology still has no current\nversion, make it current and load it, as set-current then create-load\nwould, and email the requester when that load ends; for an ontology's\nfirst draft. The caller must be able to write the ontology's database,\nas create-load needs (PERMISSION_DENIED otherwise); an ontology that\nalready has a current version is FAILED_PRECONDITION, and a sample\nINVALID_ARGUMENT. A draft a load would refuse, or one drafted once the\nworkspace's month of loads is spent, waits for review as without it,\nand the email says so; so does a draft that fails."
+          "description": "Once the draft is stored, while the ontology still has no current\r\nversion, make it current and load it, as set-current then create-load\r\nwould, and email the requester when that load ends; for an ontology's\r\nfirst draft. The caller must be able to write the ontology's database,\r\nas create-load needs (PERMISSION_DENIED otherwise); an ontology that\r\nalready has a current version is FAILED_PRECONDITION, and a sample\r\nINVALID_ARGUMENT. A draft a load would refuse, or one drafted once the\r\nworkspace's month of loads is spent, waits for review as without it,\r\nand the email says so; so does a draft that fails."
         }
       }
     },
@@ -3446,7 +3629,7 @@
           "type": "string"
         }
       },
-      "description": "MoveFoundryDocumentRequest puts a document in another live set of the\nworkspace. A load keeps what it read: the move applies to it from the next\nload. An uploaded document is then read as an upload into the set is."
+      "description": "MoveFoundryDocumentRequest puts a document in another live set of the\r\nworkspace. A load keeps what it read: the move applies to it from the next\r\nload. An uploaded document is then read as an upload into the set is."
     },
     "FoundryServiceMoveFoundryOntologyDocumentBody": {
       "type": "object",
@@ -3469,7 +3652,7 @@
           "description": "The revision read; 0 for a workspace with none yet."
         }
       },
-      "description": "PutFoundryDataLayoutRequest replaces the layout the caller read:\nFAILED_PRECONDITION when expected_revision is no longer the workspace's."
+      "description": "PutFoundryDataLayoutRequest replaces the layout the caller read:\r\nFAILED_PRECONDITION when expected_revision is no longer the workspace's."
     },
     "FoundryServiceReadFoundryGraphBody": {
       "type": "object",
@@ -3478,7 +3661,7 @@
           "type": "string"
         }
       },
-      "description": "ReadFoundryGraphRequest reads a load of the ontology's database: entities\nwith the facts its version's rules derive, patterns, explanations (\"why\"),\nrule breaks and evidence. reads_json is a JSON array of 1 to 20 reads, each\nthe `reads` item of the ontology agent's read_request.json. NOT_FOUND for a\nload of another ontology or one deleted; FAILED_PRECONDITION while it is\nbeing deleted; RESOURCE_EXHAUSTED while the workspace has as many reads\nrunning as it may."
+      "description": "ReadFoundryGraphRequest reads a load of the ontology's database: entities\r\nwith the facts its version's rules derive, patterns, explanations (\"why\"),\r\nrule breaks and evidence. reads_json is a JSON array of 1 to 20 reads, each\r\nthe `reads` item of the ontology agent's read_request.json. NOT_FOUND for a\r\nload of another ontology or one deleted; FAILED_PRECONDITION while it is\r\nbeing deleted; RESOURCE_EXHAUSTED while the workspace has as many reads\r\nrunning as it may."
     },
     "FoundryServiceReviseOntologyVersionBody": {
       "type": "object",
@@ -3500,7 +3683,7 @@
     },
     "FoundryServiceSetCurrentFoundryLoadBody": {
       "type": "object",
-      "description": "SetCurrentFoundryLoadRequest points the ontology's reads and uploads at a\nready or partial load (FAILED_PRECONDITION otherwise). Documents it lacks\nare extracted into it: at once, or after the live job."
+      "description": "SetCurrentFoundryLoadRequest points the ontology's reads and uploads at a\r\nready or partial load (FAILED_PRECONDITION otherwise). Documents it lacks\r\nare extracted into it: at once, or after the live job."
     },
     "FoundryServiceSetCurrentOntologyVersionBody": {
       "type": "object",
@@ -3523,9 +3706,31 @@
       },
       "description": "Reads the current load's review. Stores a decision for the next load only."
     },
+    "FoundryServiceStartGraphComputeBody": {
+      "type": "object",
+      "properties": {
+        "loadId": {
+          "type": "string"
+        },
+        "algorithm": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "paramsJson": {
+          "type": "string",
+          "description": "Algorithm parameters, as JSON. Empty for degree."
+        },
+        "clientToken": {
+          "type": "string",
+          "description": "Makes the call idempotent, like a load's."
+        }
+      }
+    },
     "FoundryServiceStopFoundryLoadEnrichmentBody": {
       "type": "object",
-      "description": "StopFoundryLoadEnrichmentRequest stops a load's lookups: a queued step\nends at once, a running one after its batch; the load then applies what\nwas found. NOT_FOUND when the load has no step."
+      "description": "StopFoundryLoadEnrichmentRequest stops a load's lookups: a queued step\r\nends at once, a running one after its batch; the load then applies what\r\nwas found. NOT_FOUND when the load has no step."
     },
     "FoundryServiceSyncConnectorBody": {
       "type": "object",
@@ -3557,7 +3762,7 @@
         "syncEverySeconds": {
           "type": "string",
           "format": "int64",
-          "description": "0 returns to the plan's interval, -1 turns automatic syncs off, and a\npositive value syncs that often, never below the plan's shortest."
+          "description": "0 returns to the plan's interval, -1 turns automatic syncs off, and a\r\npositive value syncs that often, never below the plan's shortest."
         }
       }
     },
@@ -3580,14 +3785,14 @@
           "description": "Blank keeps the setting's key where it still belongs to the endpoint."
         }
       },
-      "description": "UpdateFoundryAIRequest is an owner's change: back to the default at once,\nor a provider saved and tested before it is used (FoundryAI.pending);\nthe setting in force stays until the test passes. Bringing a key needs\nFoundry Pro or Max when hosted (FAILED_PRECONDITION, reason\nFOUNDRY_PRO_REQUIRED); a model Helix can't price needs rates\n(FAILED_PRECONDITION, reason FOUNDRY_AI_PRICE_REQUIRED); saves are capped\nper hour (RESOURCE_EXHAUSTED)."
+      "description": "UpdateFoundryAIRequest is an owner's change: back to the default at once,\r\nor a provider saved and tested before it is used (FoundryAI.pending);\r\nthe setting in force stays until the test passes. Bringing a key needs\r\nFoundry Pro or Max when hosted (FAILED_PRECONDITION, reason\r\nFOUNDRY_PRO_REQUIRED); a model Helix can't price needs rates\r\n(FAILED_PRECONDITION, reason FOUNDRY_AI_PRICE_REQUIRED); saves are capped\r\nper hour (RESOURCE_EXHAUSTED)."
     },
     "FoundryServiceUpdateFoundryDocumentBody": {
       "type": "object",
       "properties": {
         "name": {
           "type": "string",
-          "description": "1 to 255 characters once trimmed, with no slash, backslash or control\ncharacter."
+          "description": "1 to 255 characters once trimmed, with no slash, backslash or control\r\ncharacter."
         }
       },
       "description": "UpdateFoundryDocumentRequest renames a document that is not deleted."
@@ -3620,7 +3825,7 @@
           "description": "The notice the owner was shown."
         }
       },
-      "description": "UpdateFoundryEnrichmentRequest records an owner's change, kept as history\nwith the notice they were shown. Turning it on needs Helix's flag\n(FAILED_PRECONDITION) and Foundry Pro (FAILED_PRECONDITION, reason\nFOUNDRY_PRO_REQUIRED); turning it off is always allowed: running lookups\nare cancelled, stored profiles deleted, and each ontology whose loads\napplied some is loaded again without them."
+      "description": "UpdateFoundryEnrichmentRequest records an owner's change, kept as history\r\nwith the notice they were shown. Turning it on needs Helix's flag\r\n(FAILED_PRECONDITION) and Foundry Pro (FAILED_PRECONDITION, reason\r\nFOUNDRY_PRO_REQUIRED); turning it off is always allowed: running lookups\r\nare cancelled, stored profiles deleted, and each ontology whose loads\r\napplied some is loaded again without them."
     },
     "FoundryServiceUpdateFoundryOntologyBody": {
       "type": "object",
@@ -3845,7 +4050,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Objects the source has but the connector cannot read, as name or\n\"name: reason\"."
+          "description": "Objects the source has but the connector cannot read, as name or\r\n\"name: reason\"."
         },
         "maxBytes": {
           "type": "string",
@@ -3881,7 +4086,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "description": "stripe, workos, posthog, github, linear, calcom, granola, slack, notion,\ngoogle, postgres, mysql, s3 or events."
+          "description": "stripe, workos, posthog, github, linear, calcom, granola, slack, notion,\r\ngoogle, postgres, mysql, s3 or events."
         },
         "displayName": {
           "type": "string"
@@ -4047,7 +4252,7 @@
         },
         "format": {
           "type": "string",
-          "description": "File sources only, from here on.\nparquet, json or csv."
+          "description": "File sources only, from here on.\r\nparquet, json or csv."
         },
         "fileCount": {
           "type": "integer",
@@ -4108,7 +4313,7 @@
         },
         "existing": {
           "type": "boolean",
-          "description": "The workspace already had this document: the same client token, or the\nsame bytes in whatever set it is (document.set_id), which may not be the\nset asked for."
+          "description": "The workspace already had this document: the same client token, or the\r\nsame bytes in whatever set it is (document.set_id), which may not be the\r\nset asked for."
         }
       }
     },
@@ -4135,7 +4340,7 @@
         },
         "routed": {
           "type": "boolean",
-          "description": "Whether the ontology's reading version has the document's set in scope\nand its routes name it. The set list's read_by says it for every\nontology."
+          "description": "Whether the ontology's reading version has the document's set in scope\r\nand its routes name it. The set list's read_by says it for every\r\nontology."
         },
         "existing": {
           "type": "boolean"
@@ -4158,7 +4363,7 @@
         },
         "tier": {
           "$ref": "#/definitions/v1FoundryTier",
-          "description": "The tier to buy: FOUNDRY_TIER_PRO when unset, or FOUNDRY_TIER_MAX.\nAsking for the tier already held returns the plan and charges nothing;\nasking for the other paid tier switches to it."
+          "description": "The tier to buy: FOUNDRY_TIER_PRO when unset, or FOUNDRY_TIER_MAX.\r\nAsking for the tier already held returns the plan and charges nothing;\r\nasking for the other paid tier switches to it."
         },
         "planCode": {
           "type": "string",
@@ -4171,11 +4376,11 @@
       "properties": {
         "checkoutUrl": {
           "type": "string",
-          "description": "The checkout page to send the customer to; empty when the billing system\ncharged a card on file."
+          "description": "The checkout page to send the customer to; empty when the billing system\r\ncharged a card on file."
         },
         "plan": {
           "$ref": "#/definitions/v1FoundryPlan",
-          "description": "The plan now. It can read FREE for a moment after a charge; read\nGetFoundryPlan again."
+          "description": "The plan now. It can read FREE for a moment after a charge; read\r\nGetFoundryPlan again."
         }
       }
     },
@@ -4240,7 +4445,7 @@
           "additionalProperties": {
             "type": "string"
           },
-          "description": "Table to the column its application updates on every write; a change\nsync reads only rows past the column's last value."
+          "description": "Table to the column its application updates on every write; a change\r\nsync reads only rows past the column's last value."
         },
         "cdc": {
           "$ref": "#/definitions/v1DatabaseCDCConfig",
@@ -4276,7 +4481,7 @@
           "format": "int64"
         }
       },
-      "description": "EventSourceCapacity is how full an event source's table is, against the\ncaps every table has. Output only.",
+      "description": "EventSourceCapacity is how full an event source's table is, against the\r\ncaps every table has. Output only.",
       "readOnly": true
     },
     "v1EventSourceField": {
@@ -4296,7 +4501,7 @@
       "properties": {
         "description": {
           "type": "string",
-          "description": "What each piece is, for people and Foundry's agent; at most 1000\ncharacters. Absent on update leaves it unchanged."
+          "description": "What each piece is, for people and Foundry's agent; at most 1000\r\ncharacters. Absent on update leaves it unchanged."
         },
         "fields": {
           "type": "array",
@@ -4304,14 +4509,14 @@
             "type": "object",
             "$ref": "#/definitions/v1EventSourceField"
           },
-          "description": "Output only: the top-level fields its pieces have carried, by name, each\nwith the JSON type it holds. Ignored on create and update."
+          "description": "Output only: the top-level fields its pieces have carried, by name, each\r\nwith the JSON type it holds. Ignored on create and update."
         },
         "textField": {
           "type": "string",
-          "description": "The top-level field holding each piece's text: the body of the piece's\ndocument in the source's own set, which entity extraction reads. It\nnames a field the pieces have carried as a string (or only as null), or\none they have not carried yet, and locks it as a string: later pieces\nmust comply. Absent on update leaves it unchanged; \"\" clears it, and the\nsource then has no documents and no extraction. Changing it re-renders\nthe newest pieces in one full sync."
+          "description": "The top-level field holding each piece's text: the body of the piece's\r\ndocument in the source's own set, which entity extraction reads. It\r\nnames a field the pieces have carried as a string (or only as null), or\r\none they have not carried yet, and locks it as a string: later pieces\r\nmust comply. Absent on update leaves it unchanged; \"\" clears it, and the\r\nsource then has no documents and no extraction. Changing it re-renders\r\nthe newest pieces in one full sync."
         }
       },
-      "description": "EventsConnectorConfig is an event source: pieces of data, JSON objects\nwith an id, that people and their agents send to Foundry. It has no\ncredential."
+      "description": "EventsConnectorConfig is an event source: pieces of data, JSON objects\r\nwith an id, that people and their agents send to Foundry. It has no\r\ncredential."
     },
     "v1FoundryAI": {
       "type": "object",
@@ -4322,7 +4527,7 @@
         },
         "default": {
           "$ref": "#/definitions/v1FoundryAIDefault",
-          "description": "The deployment's provider; unset is none, which only a local install\nhas: model work is then refused (FOUNDRY_AI_NOT_CONFIGURED) until an\nowner chooses one."
+          "description": "The deployment's provider; unset is none, which only a local install\r\nhas: model work is then refused (FOUNDRY_AI_NOT_CONFIGURED) until an\r\nowner chooses one."
         },
         "pending": {
           "$ref": "#/definitions/v1FoundryAIConfig",
@@ -4345,11 +4550,11 @@
         },
         "proRequired": {
           "type": "boolean",
-          "description": "The workspace's plan doesn't include bringing a key: saving one is\nrefused (FAILED_PRECONDITION, reason FOUNDRY_PRO_REQUIRED) until it is\non Foundry Pro or Max. Going back to the default never is."
+          "description": "The workspace's plan doesn't include bringing a key: saving one is\r\nrefused (FAILED_PRECONDITION, reason FOUNDRY_PRO_REQUIRED) until it is\r\non Foundry Pro or Max. Going back to the default never is."
         },
         "detected": {
           "$ref": "#/definitions/v1FoundryAIDetected",
-          "description": "How a local install that names no default provider found one on its\nmachine (default, when it found one); unset hosted, and in an install\nwhose FOUNDRY_AI_PROVIDER names its default."
+          "description": "How a local install that names no default provider found one on its\r\nmachine (default, when it found one); unset hosted, and in an install\r\nwhose FOUNDRY_AI_PROVIDER names its default."
         }
       },
       "description": "FoundryAI is a workspace's AI setting."
@@ -4437,7 +4642,7 @@
         },
         "probeFailure": {
           "type": "string",
-          "description": "Why a failed probe failed: an agent ModelFailure (auth, not_found, ...)\nand its check's ProbeDetail (tools_rejected, ...)."
+          "description": "Why a failed probe failed: an agent ModelFailure (auth, not_found, ...)\r\nand its check's ProbeDetail (tools_rejected, ...)."
         },
         "probeDetail": {
           "type": "string"
@@ -4476,14 +4681,14 @@
       "properties": {
         "summary": {
           "type": "string",
-          "description": "For the owner: what is used and why, or what was looked for and how to\nset a provider up. Never a key."
+          "description": "For the owner: what is used and why, or what was looked for and how to\r\nset a provider up. Never a key."
         },
         "detectedAt": {
           "type": "string",
           "format": "date-time"
         }
       },
-      "description": "FoundryAIDetected is how a local install found its default, looking in\nthis order: an ANTHROPIC_API_KEY, then an OPENAI_API_KEY, in its\nenvironment; an Ollama it can reach (the bundled one, then this\ncomputer's) with a model that calls tools; LM Studio on this computer\nserving a model. It looks again as Settings › AI models opens\n(DetectFoundryAIDefault)."
+      "description": "FoundryAIDetected is how a local install found its default, looking in\r\nthis order: an ANTHROPIC_API_KEY, then an OPENAI_API_KEY, in its\r\nenvironment; an Ollama it can reach (the bundled one, then this\r\ncomputer's) with a model that calls tools; LM Studio on this computer\r\nserving a model. It looks again as Settings › AI models opens\r\n(DetectFoundryAIDefault)."
     },
     "v1FoundryAIKey": {
       "type": "string",
@@ -4508,7 +4713,7 @@
         "FOUNDRY_AI_KIND_OPENAI_COMPATIBLE"
       ],
       "default": "FOUNDRY_AI_KIND_UNSPECIFIED",
-      "description": "FoundryAIKind is a model provider kind. Every kind is declared; a\ndeployment offers those its agent implements (FoundryAI.offered)."
+      "description": "FoundryAIKind is a model provider kind. Every kind is declared; a\r\ndeployment offers those its agent implements (FoundryAI.offered)."
     },
     "v1FoundryAIModel": {
       "type": "object",
@@ -4519,11 +4724,11 @@
         "table": {
           "type": "object",
           "properties": {},
-          "description": "Helix's price table for the model (FAILED_PRECONDITION, reason\nFOUNDRY_AI_PRICE_REQUIRED, when it has none)."
+          "description": "Helix's price table for the model (FAILED_PRECONDITION, reason\r\nFOUNDRY_AI_PRICE_REQUIRED, when it has none)."
         },
         "tableAs": {
           "type": "string",
-          "description": "Helix's price table for another model of the same kind: an Azure\ndeployment's underlying model, or a Bedrock inference profile's."
+          "description": "Helix's price table for another model of the same kind: an Azure\r\ndeployment's underlying model, or a Bedrock inference profile's."
         },
         "rates": {
           "$ref": "#/definitions/v1FoundryAIRates",
@@ -4553,7 +4758,7 @@
           "$ref": "#/definitions/v1FoundryAIModel"
         }
       },
-      "description": "FoundryAIModels is a model per task: drafting ontologies, answering\nquestions, reading documents and checking the facts read."
+      "description": "FoundryAIModels is a model per task: drafting ontologies, answering\r\nquestions, reading documents and checking the facts read."
     },
     "v1FoundryAIOffer": {
       "type": "object",
@@ -4563,7 +4768,7 @@
         },
         "suggested": {
           "$ref": "#/definitions/v1FoundryAIModels",
-          "description": "The models a save of the kind gets where it names none; unset for a\nkind whose owner names every model."
+          "description": "The models a save of the kind gets where it names none; unset for a\r\nkind whose owner names every model."
         },
         "key": {
           "$ref": "#/definitions/v1FoundryAIKey"
@@ -4624,7 +4829,7 @@
           "$ref": "#/definitions/v1FoundryAICompatible"
         }
       },
-      "description": "FoundryAIProvider is where a workspace's model calls go: one message per\nkind, holding that kind's endpoint settings and never a key."
+      "description": "FoundryAIProvider is where a workspace's model calls go: one message per\r\nkind, holding that kind's endpoint settings and never a key."
     },
     "v1FoundryAIRates": {
       "type": "object",
@@ -4640,7 +4845,7 @@
           "description": "Empty when cached input is not priced apart."
         }
       },
-      "description": "FoundryAIRates are prices in US dollars per million tokens, as decimal\nstrings with at most three decimals (\"0.075\")."
+      "description": "FoundryAIRates are prices in US dollars per million tokens, as decimal\r\nstrings with at most three decimals (\"0.075\")."
     },
     "v1FoundryAIResponse": {
       "type": "object",
@@ -4701,7 +4906,7 @@
         },
         "mediaType": {
           "type": "string",
-          "description": "text/markdown, text/mdx, text/plain, application/json, text/csv,\ntext/tab-separated-values, application/x-ndjson,\napplication/vnd.apache.parquet or application/pdf. A rename keeps it."
+          "description": "text/markdown, text/mdx, text/plain, application/json, text/csv,\r\ntext/tab-separated-values, application/x-ndjson,\r\napplication/vnd.apache.parquet or application/pdf. A rename keeps it."
         },
         "sizeBytes": {
           "type": "string",
@@ -4713,7 +4918,7 @@
         },
         "status": {
           "type": "string",
-          "description": "pending_upload, uploaded or deleted. A connector's document is only\nuploaded or deleted: deleted once replaced or removed at its source."
+          "description": "pending_upload, uploaded or deleted. A connector's document is only\r\nuploaded or deleted: deleted once replaced or removed at its source."
         },
         "createdAt": {
           "type": "string",
@@ -4721,7 +4926,7 @@
         },
         "extraction": {
           "$ref": "#/definitions/v1FoundryDocumentExtraction",
-          "description": "Read through an ontology's routes: what extracting it into that\nontology's current load made of it; unset until then, while no load is\ncurrent, and on the workspace's routes."
+          "description": "Read through an ontology's routes: what extracting it into that\r\nontology's current load made of it; unset until then, while no load is\r\ncurrent, and on the workspace's routes."
         },
         "setId": {
           "type": "string",
@@ -4733,25 +4938,25 @@
             "type": "object",
             "$ref": "#/definitions/v1FoundryDocumentOntology"
           },
-          "description": "The ontologies associated with it, on the workspace's GET only: those\nwhose current load holds it, and those whose reading version (the\ncurrent load's, else the current version) has its set in scope."
+          "description": "The ontologies associated with it, on the workspace's GET only: those\r\nwhose current load holds it, and those whose reading version (the\r\ncurrent load's, else the current version) has its set in scope."
         },
         "read": {
           "$ref": "#/definitions/v1FoundryFileRead",
-          "description": "How ontologies read it, and what reading it has come to; unset until\nits upload completes."
+          "description": "How ontologies read it, and what reading it has come to; unset until\r\nits upload completes."
         },
         "source": {
           "$ref": "#/definitions/v1FoundryDocumentSource",
           "description": "The row of a connector's table it is the text of; unset for an upload."
         }
       },
-      "description": "FoundryDocument is one document of a workspace, in one of its document\nsets: one a person uploaded, or the text of one row of a connector's table\n(source), which the connector's syncs write into its set. Ontologies read\ntext/markdown, text/mdx (as Markdown, with its code blanked to spaces; it\nis never compiled or run) and text/plain as text, extracted through\nroutes. Each text/csv,\ntext/tab-separated-values, application/json, application/x-ndjson and\napplication/vnd.apache.parquet document is read once, at upload, as a\ntable of its own, which a version's mappings name by the document's id; it\nis never extracted. Each application/pdf document is read once, at\nupload, to its text (read), and is extracted through routes as that text\nonce read; a scanned PDF has no text to read."
+      "description": "FoundryDocument is one document of a workspace, in one of its document\r\nsets: one a person uploaded, or the text of one row of a connector's table\r\n(source), which the connector's syncs write into its set. Ontologies read\r\ntext/markdown, text/mdx (as Markdown, with its code blanked to spaces; it\r\nis never compiled or run) and text/plain as text, extracted through\r\nroutes. Each text/csv,\r\ntext/tab-separated-values, application/json, application/x-ndjson and\r\napplication/vnd.apache.parquet document is read once, at upload, as a\r\ntable of its own, which a version's mappings name by the document's id; it\r\nis never extracted. Each application/pdf document is read once, at\r\nupload, to its text (read), and is extracted through routes as that text\r\nonce read; a scanned PDF has no text to read."
     },
     "v1FoundryDocumentExtraction": {
       "type": "object",
       "properties": {
         "status": {
           "type": "string",
-          "description": "extracted, duplicate, failed or out_of_scope: no extraction route of the\nload's version names its set, so it is stored with its sections and no\nmodel read it."
+          "description": "extracted, duplicate, failed or out_of_scope: no extraction route of the\r\nload's version names its set, so it is stored with its sections and no\r\nmodel read it."
         },
         "duplicateOf": {
           "type": "string",
@@ -4848,11 +5053,11 @@
         },
         "routed": {
           "type": "boolean",
-          "description": "Whether the routes of the ontology's reading version name the\ndocument's set: its documents are read for what they hold, not only\nstored."
+          "description": "Whether the routes of the ontology's reading version name the\r\ndocument's set: its documents are read for what they hold, not only\r\nstored."
         },
         "extraction": {
           "$ref": "#/definitions/v1FoundryDocumentExtraction",
-          "description": "What extracting it into the ontology's current load made of it; unset\nwhen that load has not extracted it, or there is none."
+          "description": "What extracting it into the ontology's current load made of it; unset\r\nwhen that load has not extracted it, or there is none."
         }
       },
       "description": "FoundryDocumentOntology is one ontology a document is associated with."
@@ -4881,7 +5086,7 @@
         "FOUNDRY_DOCUMENT_READ_OUTCOME_READING"
       ],
       "default": "FOUNDRY_DOCUMENT_READ_OUTCOME_UNSPECIFIED",
-      "description": "What completing or moving a document did for one ontology that reads its\nset: one whose live job's load, or current load, is of a version with the\nset in scope.\n\n - FOUNDRY_DOCUMENT_READ_OUTCOME_QUEUED: An extract of the document into the current load was queued.\n - FOUNDRY_DOCUMENT_READ_OUTCOME_OWED: A job of the ontology is live: it reads the document, or its end\nqueues the extract that does.\n - FOUNDRY_DOCUMENT_READ_OUTCOME_NO_BUDGET: Nothing was queued: the workspace spent this month's budget. The next\nload or extract reads it.\n - FOUNDRY_DOCUMENT_READ_OUTCOME_HELD: Nothing was queued: the current load already holds the document (a\nmove), and keeps what it read until the next load.\n - FOUNDRY_DOCUMENT_READ_OUTCOME_SKIPPED: Nothing was queued or owed: the caller may not write the ontology's\ndatabase (database.query.write on its project). A later load or extract\nreads it.\n - FOUNDRY_DOCUMENT_READ_OUTCOME_READING: Nothing was queued yet: the document is a PDF whose text is still being\nread. The load holds it, and the read's end has the ontology read it\n(queued, or owed by a live job)."
+      "description": "What completing or moving a document did for one ontology that reads its\r\nset: one whose live job's load, or current load, is of a version with the\r\nset in scope.\n\n - FOUNDRY_DOCUMENT_READ_OUTCOME_QUEUED: An extract of the document into the current load was queued.\n - FOUNDRY_DOCUMENT_READ_OUTCOME_OWED: A job of the ontology is live: it reads the document, or its end\r\nqueues the extract that does.\n - FOUNDRY_DOCUMENT_READ_OUTCOME_NO_BUDGET: Nothing was queued: the workspace spent this month's budget. The next\r\nload or extract reads it.\n - FOUNDRY_DOCUMENT_READ_OUTCOME_HELD: Nothing was queued: the current load already holds the document (a\r\nmove), and keeps what it read until the next load.\n - FOUNDRY_DOCUMENT_READ_OUTCOME_SKIPPED: Nothing was queued or owed: the caller may not write the ontology's\r\ndatabase (database.query.write on its project). A later load or extract\r\nreads it.\n - FOUNDRY_DOCUMENT_READ_OUTCOME_READING: Nothing was queued yet: the document is a PDF whose text is still being\r\nread. The load holds it, and the read's end has the ontology read it\r\n(queued, or owed by a live job)."
     },
     "v1FoundryDocumentReadsResponse": {
       "type": "object",
@@ -4935,14 +5140,14 @@
             "type": "object",
             "$ref": "#/definitions/v1FoundryDocumentSetReader"
           },
-          "description": "The ontologies whose reading version (the current load's, else the\ncurrent version) has it in scope, on lists."
+          "description": "The ontologies whose reading version (the current load's, else the\r\ncurrent version) has it in scope, on lists."
         },
         "connector": {
           "$ref": "#/definitions/v1FoundryDocumentSetConnector",
           "description": "The connector whose syncs write the set; unset for a set a person made."
         }
       },
-      "description": "FoundryDocumentSet is a named group of a workspace's documents: a folder\nof the Data tree. Every document belongs to one set. A version reads the\nsets of its scope, and its extraction routes ([extractions.\u003cname\u003e] in its\nmappings) name, by id, the sets whose documents they read for what they\nhold. A person makes a set, or a connector's syncs do (connector)."
+      "description": "FoundryDocumentSet is a named group of a workspace's documents: a folder\r\nof the Data tree. Every document belongs to one set. A version reads the\r\nsets of its scope, and its extraction routes ([extractions.\u003cname\u003e] in its\r\nmappings) name, by id, the sets whose documents they read for what they\r\nhold. A person makes a set, or a connector's syncs do (connector)."
     },
     "v1FoundryDocumentSetConnector": {
       "type": "object",
@@ -4957,7 +5162,7 @@
         "maxDocuments": {
           "type": "integer",
           "format": "int32",
-          "description": "The most documents a sync of everything keeps: the newest at the\nsource. A sync of changes may add past it until the next one, except\nin an API source's set, which never holds more."
+          "description": "The most documents a sync of everything keeps: the newest at the\r\nsource. A sync of changes may add past it until the next one, except\r\nin an API source's set, which never holds more."
         },
         "connectorName": {
           "type": "string",
@@ -4970,19 +5175,19 @@
         "monthSystemUsdMicros": {
           "type": "string",
           "format": "int64",
-          "description": "What work no person started (refreshes, and extracts no one asked for)\nhas spent extracting the set's documents in the current UTC month, in\nmillionths of a US dollar. Read only for a set with an allowance; 0\nfor any other."
+          "description": "What work no person started (refreshes, and extracts no one asked for)\r\nhas spent extracting the set's documents in the current UTC month, in\r\nmillionths of a US dollar. Read only for a set with an allowance; 0\r\nfor any other."
         },
         "maxMonthSystemUsdMicros": {
           "type": "string",
           "format": "int64",
-          "description": "The most that work may spend on the set in a UTC month, its allowance;\nset only for a set with one (an API source's). Once it is spent the set\nis paused."
+          "description": "The most that work may spend on the set in a UTC month, its allowance;\r\nset only for a set with one (an API source's). Once it is spent the set\r\nis paused."
         },
         "paused": {
           "type": "boolean",
-          "description": "Whether the set's syncs write no documents now: it holds some, and work\nno person started can spend no more extracting it this UTC month (its\nallowance, its workspace's for all its API sources, or the workspace's\nmonth's share for such work is spent). The graph keeps the pieces it\nextracted; the newest wait for next month, or for a load a person\nstarts, and a sync a person starts still writes them. False for a set\nwithout an allowance."
+          "description": "Whether the set's syncs write no documents now: it holds some, and work\r\nno person started can spend no more extracting it this UTC month (its\r\nallowance, its workspace's for all its API sources, or the workspace's\r\nmonth's share for such work is spent). The graph keeps the pieces it\r\nextracted; the newest wait for next month, or for a load a person\r\nstarts, and a sync a person starts still writes them. False for a set\r\nwithout an allowance."
         }
       },
-      "description": "FoundryDocumentSetConnector is the connector and stream a set holds the\ndocuments of: one set per connector and stream, for as long as the\nconnector lives. The set and its documents are the connector's: changing\nor deleting the set, and uploading, moving or deleting its documents, is\nFAILED_PRECONDITION; what it holds changes with the connection's\nsettings. Its name is the stream's title (\"Notes\"), and the user calls it\n\"\u003cconnector_name\u003e / \u003cname\u003e\". It takes no place among the workspace's\ndocument sets or their names, and its documents none in the workspace's\nuploads; a generation's pick of sets counts it."
+      "description": "FoundryDocumentSetConnector is the connector and stream a set holds the\r\ndocuments of: one set per connector and stream, for as long as the\r\nconnector lives. The set and its documents are the connector's: changing\r\nor deleting the set, and uploading, moving or deleting its documents, is\r\nFAILED_PRECONDITION; what it holds changes with the connection's\r\nsettings. Its name is the stream's title (\"Notes\"), and the user calls it\r\n\"\u003cconnector_name\u003e / \u003cname\u003e\". It takes no place among the workspace's\r\ndocument sets or their names, and its documents none in the workspace's\r\nuploads; a generation's pick of sets counts it."
     },
     "v1FoundryDocumentSetReader": {
       "type": "object",
@@ -5010,7 +5215,7 @@
       "properties": {
         "externalId": {
           "type": "string",
-          "description": "The key of its row at the source (a Granola note's id), unique among\nits set's documents that are not deleted."
+          "description": "The key of its row at the source (a Granola note's id), unique among\r\nits set's documents that are not deleted."
         },
         "version": {
           "type": "string",
@@ -5018,15 +5223,15 @@
         },
         "url": {
           "type": "string",
-          "description": "The item's page at the source, an absolute https URL; empty when it\nhas none."
+          "description": "The item's page at the source, an absolute https URL; empty when it\r\nhas none."
         },
         "at": {
           "type": "string",
           "format": "date-time",
-          "description": "The item's own time at the source (a note's creation), which orders the\nset's documents, newest first."
+          "description": "The item's own time at the source (a note's creation), which orders the\r\nset's documents, newest first."
         }
       },
-      "description": "FoundryDocumentSource is where a connector's document comes from. The\ndocument is the connector's: renaming, moving or deleting it is\nFAILED_PRECONDITION. New text at the source is a new document that\nreplaces it; a new version with the same text changes it in place."
+      "description": "FoundryDocumentSource is where a connector's document comes from. The\r\ndocument is the connector's: renaming, moving or deleting it is\r\nFAILED_PRECONDITION. New text at the source is a new document that\r\nreplaces it; a new version with the same text changes it in place."
     },
     "v1FoundryDocumentUpload": {
       "type": "object",
@@ -5048,7 +5253,7 @@
           "format": "date-time"
         }
       },
-      "description": "FoundryDocumentUpload is a presigned PUT of a document's bytes. Send exactly\nthe declared bytes with these headers before expires_at; the browser adds\nContent-Length, which is signed too."
+      "description": "FoundryDocumentUpload is a presigned PUT of a document's bytes. Send exactly\r\nthe declared bytes with these headers before expires_at; the browser adds\r\nContent-Length, which is signed too."
     },
     "v1FoundryEnrichment": {
       "type": "object",
@@ -5063,7 +5268,7 @@
         "monthlyCreditCap": {
           "type": "string",
           "format": "int64",
-          "description": "The most credits the workspace's loads charge in a calendar month (UTC);\n0 until an owner sets it."
+          "description": "The most credits the workspace's loads charge in a calendar month (UTC);\r\n0 until an owner sets it."
         },
         "creditsUsed": {
           "type": "string",
@@ -5091,7 +5296,7 @@
         "purgesPending": {
           "type": "integer",
           "format": "int32",
-          "description": "Ontologies whose enriched values a clean load has still to remove,\nsince consent was turned off."
+          "description": "Ontologies whose enriched values a clean load has still to remove,\r\nsince consent was turned off."
         }
       },
       "description": "FoundryEnrichment is a workspace's People enrichment setting and month."
@@ -5105,7 +5310,7 @@
         "FOUNDRY_ENRICHMENT_AVAILABILITY_AVAILABLE"
       ],
       "default": "FOUNDRY_ENRICHMENT_AVAILABILITY_UNSPECIFIED",
-      "description": "FoundryEnrichmentAvailability is whether a workspace's loads may look\npeople up.\n\n - FOUNDRY_ENRICHMENT_AVAILABILITY_UNSPECIFIED: Helix can't say for now: the workspace's plan couldn't be read. Turning\nPeople enrichment off still works.\n - FOUNDRY_ENRICHMENT_AVAILABILITY_DISABLED: Helix has People enrichment off: loads look no one up, and apply the\nprofiles found before.\n - FOUNDRY_ENRICHMENT_AVAILABILITY_PRO_REQUIRED: New lookups need Foundry Pro; the profiles found before still apply."
+      "description": "FoundryEnrichmentAvailability is whether a workspace's loads may look\r\npeople up.\n\n - FOUNDRY_ENRICHMENT_AVAILABILITY_UNSPECIFIED: Helix can't say for now: the workspace's plan couldn't be read. Turning\r\nPeople enrichment off still works.\n - FOUNDRY_ENRICHMENT_AVAILABILITY_DISABLED: Helix has People enrichment off: loads look no one up, and apply the\r\nprofiles found before.\n - FOUNDRY_ENRICHMENT_AVAILABILITY_PRO_REQUIRED: New lookups need Foundry Pro; the profiles found before still apply."
     },
     "v1FoundryEnrichmentResponse": {
       "type": "object",
@@ -5172,7 +5377,7 @@
           "$ref": "#/definitions/v1FoundryEventSourceMode"
         }
       },
-      "description": "FoundryEventSourcePick is one event source a generation drafts from, and\nhow its ontology reads it."
+      "description": "FoundryEventSourcePick is one event source a generation drafts from, and\r\nhow its ontology reads it."
     },
     "v1FoundryEventSourceToken": {
       "type": "object",
@@ -5218,7 +5423,7 @@
       "properties": {
         "code": {
           "type": "string",
-          "description": "too_large, unsupported, model or store. A PDF whose read failed is\nrecorded with the read's code; the document's read says why."
+          "description": "too_large, unsupported, model or store. A PDF whose read failed is\r\nrecorded with the read's code; the document's read says why."
         },
         "retryable": {
           "type": "boolean",
@@ -5255,17 +5460,17 @@
         },
         "retrying": {
           "type": "boolean",
-          "description": "A READING read that failed for a reason that is not the file's (such as\nstorage) and waits to be read again."
+          "description": "A READING read that failed for a reason that is not the file's (such as\r\nstorage) and waits to be read again."
         }
       },
-      "description": "FoundryFileRead is how ontologies read a document, and what reading it\nhas come to."
+      "description": "FoundryFileRead is how ontologies read a document, and what reading it\r\nhas come to."
     },
     "v1FoundryFileReadError": {
       "type": "object",
       "properties": {
         "code": {
           "type": "string",
-          "description": "too_large (past a reading limit: a PDF of more than 150 pages, or whose\ntext is past 1 MiB) or unsupported (not what its type says; a PDF that\nis damaged, encrypted, or scanned with no text, whose message is\n\"Scanned PDF: no text to read\")."
+          "description": "too_large (past a reading limit: a PDF of more than 150 pages, or whose\r\ntext is past 1 MiB) or unsupported (not what its type says; a PDF that\r\nis damaged, encrypted, or scanned with no text, whose message is\r\n\"Scanned PDF: no text to read\")."
         },
         "message": {
           "type": "string",
@@ -5293,7 +5498,7 @@
         "FOUNDRY_FILE_READ_STATE_FAILED"
       ],
       "default": "FOUNDRY_FILE_READ_STATE_UNSPECIFIED",
-      "description": "FoundryFileReadState is what reading a document has come to.\n\n - FOUNDRY_FILE_READ_STATE_READY: Ontologies can read it: text, or a file whose read succeeded (a PDF's\ntext is then on :content).\n - FOUNDRY_FILE_READ_STATE_READING: Being read, or waiting to be (retrying says when after a failure). A\ngeneration started now leaves it out; a load waits for a PDF, and reads\nit once its read ends.\n - FOUNDRY_FILE_READ_STATE_FAILED: It can't be read: error says why, and a load records the PDF failed\nwith the same code. Upload a fixed file."
+      "description": "FoundryFileReadState is what reading a document has come to.\n\n - FOUNDRY_FILE_READ_STATE_READY: Ontologies can read it: text, or a file whose read succeeded (a PDF's\r\ntext is then on :content).\n - FOUNDRY_FILE_READ_STATE_READING: Being read, or waiting to be (retrying says when after a failure). A\r\ngeneration started now leaves it out; a load waits for a PDF, and reads\r\nit once its read ends.\n - FOUNDRY_FILE_READ_STATE_FAILED: It can't be read: error says why, and a load records the PDF failed\r\nwith the same code. Upload a fixed file."
     },
     "v1FoundryGraphJob": {
       "type": "object",
@@ -5306,7 +5511,7 @@
         },
         "status": {
           "type": "string",
-          "description": "queued, running, succeeded, budget_exhausted, failed or cancelled (a\ndelete a new load went before, or any job of a deleted ontology)."
+          "description": "queued, running, succeeded, budget_exhausted, failed or cancelled (a\r\ndelete a new load went before, or any job of a deleted ontology)."
         },
         "phase": {
           "type": "string",
@@ -5344,7 +5549,7 @@
           "description": "The load it writes or deletes."
         }
       },
-      "description": "FoundryGraphJob is one job on an ontology's database: a load job creates a\nload (whose id is its own) from a version's tables, then the documents; an\nextract adds documents to a load; a delete removes one."
+      "description": "FoundryGraphJob is one job on an ontology's database: a load job creates a\r\nload (whose id is its own) from a version's tables, then the documents; an\r\nextract adds documents to a load; a delete removes one."
     },
     "v1FoundryGraphJobProgress": {
       "type": "object",
@@ -5399,7 +5604,7 @@
             "type": "object",
             "$ref": "#/definitions/v1FoundryGraphJob"
           },
-          "description": "Its newest jobs, newest first: at most 20. A current load gains an\nextract per upload, so job_count and usd_micros cover all of them."
+          "description": "Its newest jobs, newest first: at most 20. A current load gains an\r\nextract per upload, so job_count and usd_micros cover all of them."
         },
         "jobCount": {
           "type": "integer",
@@ -5414,7 +5619,7 @@
         "ingestViolations": {
           "type": "string",
           "format": "uint64",
-          "description": "How many violation records its tables left open, as the ingest report\ncounted them. Unset while writing the tables, and when the report did not\ncount every chunk (an ingest retried after part of it was written).\nExtraction changes the live records, which the graph holds, not this."
+          "description": "How many violation records its tables left open, as the ingest report\r\ncounted them. Unset while writing the tables, and when the report did not\r\ncount every chunk (an ingest retried after part of it was written).\r\nExtraction changes the live records, which the graph holds, not this."
         },
         "origin": {
           "type": "string",
@@ -5427,7 +5632,7 @@
         "appliedAt": {
           "type": "string",
           "format": "date-time",
-          "description": "When a refresh last brought its tables up to date in place; unset until\none has."
+          "description": "When a refresh last brought its tables up to date in place; unset until\r\none has."
         },
         "sources": {
           "type": "array",
@@ -5435,21 +5640,21 @@
             "type": "object",
             "$ref": "#/definitions/v1FoundryLoadSource"
           },
-          "description": "The snapshot of each table it holds; empty for a load written before\nHelix recorded them, or still writing its tables."
+          "description": "The snapshot of each table it holds; empty for a load written before\r\nHelix recorded them, or still writing its tables."
         }
       },
-      "description": "FoundryLoad is one write of an approved version into an ontology's\ndatabase. Its id is the id of the load job that creates it, and every node\nand edge it writes carries that id as foundry_load, so loads of different\nversions sit side by side. Foundry keeps the current load and the newest\nothers, five in all, and deletes the rest in the background."
+      "description": "FoundryLoad is one write of an approved version into an ontology's\r\ndatabase. Its id is the id of the load job that creates it, and every node\r\nand edge it writes carries that id as foundry_load, so loads of different\r\nversions sit side by side. Foundry keeps the current load and the newest\r\nothers, five in all, and deletes the rest in the background."
     },
     "v1FoundryLoadEnrichment": {
       "type": "object",
       "properties": {
         "status": {
           "type": "string",
-          "description": "preparing, queued (waiting for a lookup slot), running, done, partial,\noff (the workspace's consent is off: no profiles apply), failed (the\nprofiles found before apply) or cancelled."
+          "description": "preparing, queued (waiting for a lookup slot), running, done, partial,\r\noff (the workspace's consent is off: no profiles apply), failed (the\r\nprofiles found before apply) or cancelled."
         },
         "stoppedBy": {
           "type": "string",
-          "description": "Why a partial step stopped: cap, provider_credits, provider, time, busy,\nstopped (someone stopped the lookups), pro or flag. Unset on any other."
+          "description": "Why a partial step stopped: cap, provider_credits, provider, time, busy,\r\nstopped (someone stopped the lookups), pro or flag. Unset on any other."
         },
         "people": {
           "type": "string",
@@ -5494,7 +5699,7 @@
         "found": {
           "type": "string",
           "format": "int64",
-          "description": "This step's lookups by outcome: found (accepted), held back by the\nchecks, not found, and unanswered (booked, not resent). A step that\npublished after its load stopped waiting for it (past its deadline and\nthe grace) counts what it found then, though the load applied only the\nprofiles found before; applied and unmatched say what the load applied."
+          "description": "This step's lookups by outcome: found (accepted), held back by the\r\nchecks, not found, and unanswered (booked, not resent). A step that\r\npublished after its load stopped waiting for it (past its deadline and\r\nthe grace) counts what it found then, though the load applied only the\r\nprofiles found before; applied and unmatched say what the load applied."
         },
         "held": {
           "type": "string",
@@ -5516,7 +5721,7 @@
         "applied": {
           "type": "string",
           "format": "int64",
-          "description": "The profiles the load applied that bound their person, and those that\nbound no one (the person changed since the lookup); 0 until its tables\nare in."
+          "description": "The profiles the load applied that bound their person, and those that\r\nbound no one (the person changed since the lookup); 0 until its tables\r\nare in."
         },
         "unmatched": {
           "type": "string",
@@ -5528,7 +5733,7 @@
           "description": "When the step published its profiles; unset before."
         }
       },
-      "description": "FoundryLoadEnrichment is a load's People enrichment step: whom it looked up\non context.dev, what it found, and what its profiles bound."
+      "description": "FoundryLoadEnrichment is a load's People enrichment step: whom it looked up\r\non context.dev, what it found, and what its profiles bound."
     },
     "v1FoundryLoadResponse": {
       "type": "object",
@@ -5549,7 +5754,7 @@
         },
         "syncId": {
           "type": "string",
-          "description": "The sync that wrote the snapshot, and when it finished; both unset for a\nload written before Helix recorded them."
+          "description": "The sync that wrote the snapshot, and when it finished; both unset for a\r\nload written before Helix recorded them."
         },
         "syncedAt": {
           "type": "string",
@@ -5575,7 +5780,7 @@
         },
         "unusable": {
           "type": "string",
-          "description": "For the owner: why Foundry can't run on it (it calls no tools, its\ncontext window is too small, it runs on ollama.com, it needs a newer\nOllama); empty when it can, or when the server can't say."
+          "description": "For the owner: why Foundry can't run on it (it calls no tools, its\r\ncontext window is too small, it runs on ollama.com, it needs a newer\r\nOllama); empty when it can, or when the server can't say."
         }
       },
       "description": "FoundryOllamaModel is a model an Ollama server has pulled."
@@ -5589,7 +5794,7 @@
         },
         "problem": {
           "type": "string",
-          "description": "For the owner: why its models can't be listed, or can't be told apart\n(a server too old to say which call tools), and how to fix it; empty\nwhen they can."
+          "description": "For the owner: why its models can't be listed, or can't be told apart\r\n(a server too old to say which call tools), and how to fix it; empty\r\nwhen they can."
         },
         "models": {
           "type": "array",
@@ -5599,7 +5804,7 @@
           }
         }
       },
-      "description": "FoundryOllamaServer is what an Ollama server has, as a local install\nreads it for Settings › AI models."
+      "description": "FoundryOllamaServer is what an Ollama server has, as a local install\r\nreads it for Settings › AI models."
     },
     "v1FoundryOntology": {
       "type": "object",
@@ -5612,7 +5817,7 @@
         },
         "projectId": {
           "type": "string",
-          "description": "project_id, tenant_id and database_name are empty for a caller who can't\nread the project's databases (clusters.read on the project)."
+          "description": "project_id, tenant_id and database_name are empty for a caller who can't\r\nread the project's databases (clusters.read on the project)."
         },
         "tenantId": {
           "type": "string"
@@ -5637,11 +5842,11 @@
         },
         "currentLoad": {
           "$ref": "#/definitions/v1FoundryOntologyCurrentLoad",
-          "description": "The load reads go to and uploads are extracted into; unset before a load\nfinished writing."
+          "description": "The load reads go to and uploads are extracted into; unset before a load\r\nfinished writing."
         },
         "activeJob": {
           "$ref": "#/definitions/v1FoundryOntologyActiveJob",
-          "description": "The job queued or running now, of any kind; unset when none is. The\nwebsite polls while it is set."
+          "description": "The job queued or running now, of any kind; unset when none is. The\r\nwebsite polls while it is set."
         },
         "autoRefresh": {
           "type": "boolean",
@@ -5657,7 +5862,7 @@
           "description": "Why an owed refresh waits: busy (a job is live); empty otherwise."
         }
       },
-      "description": "FoundryOntology is a workspace's ontology, bound to one Helix database: a\ntenant of one of the workspace's projects. Statuses are the lowercase names\nthe Foundry contract fixes."
+      "description": "FoundryOntology is a workspace's ontology, bound to one Helix database: a\r\ntenant of one of the workspace's projects. Statuses are the lowercase names\r\nthe Foundry contract fixes."
     },
     "v1FoundryOntologyActiveJob": {
       "type": "object",
@@ -5685,7 +5890,7 @@
         "documents": {
           "type": "integer",
           "format": "int32",
-          "description": "The uploaded documents its reading version's scope holds: that of the\ncurrent load's version, else of the current version; 0 with neither."
+          "description": "The uploaded documents its reading version's scope holds: that of the\r\ncurrent load's version, else of the current version; 0 with neither."
         }
       }
     },
@@ -5792,7 +5997,7 @@
           "type": "boolean"
         }
       },
-      "description": "A prop decision's value: null removes the property; any other must be of\nthe kind the property's type takes, as the engine reads it (no coercion).\ninteger is an int64, a JSON string in the REST API, so every digit of an\ninteger past 2^53 is kept."
+      "description": "A prop decision's value: null removes the property; any other must be of\r\nthe kind the property's type takes, as the engine reads it (no coercion).\r\ninteger is an int64, a JSON string in the REST API, so every digit of an\r\ninteger past 2^53 is kept."
     },
     "v1FoundryQuestion": {
       "type": "object",
@@ -5824,7 +6029,7 @@
         },
         "resultJson": {
           "type": "string",
-          "description": "The agent's AskResult as JSON (ask_result.json): set once answered or\ncannot_answer, and for a failed question whose agent sent one."
+          "description": "The agent's AskResult as JSON (ask_result.json): set once answered or\r\ncannot_answer, and for a failed question whose agent sent one."
         },
         "error": {
           "type": "string",
@@ -5858,7 +6063,7 @@
         "attempts": {
           "type": "integer",
           "format": "int32",
-          "description": "Attempts claimed so far; a queued question with attempts above 0 is\nwaiting to be retried, and error says why."
+          "description": "Attempts claimed so far; a queued question with attempts above 0 is\r\nwaiting to be retried, and error says why."
         },
         "reservedMicros": {
           "type": "string",
@@ -5866,7 +6071,7 @@
           "description": "What a running question holds back of the month's budget: its cap."
         }
       },
-      "description": "FoundryQuestion is one question asked of one load of an ontology. The\nfoundry-ask-worker answers it with the ontology agent's read-only Ask; its\nrun streams events (ListFoundryQuestionEvents), then it ends with a result."
+      "description": "FoundryQuestion is one question asked of one load of an ontology. The\r\nfoundry-ask-worker answers it with the ontology agent's read-only Ask; its\r\nrun streams events (ListFoundryQuestionEvents), then it ends with a result."
     },
     "v1FoundryQuestionBudget": {
       "type": "object",
@@ -5907,7 +6112,7 @@
           "format": "int32"
         }
       },
-      "description": "FoundryQuestionBudget is a workspace's questions budget this calendar\nmonth (UTC), apart from its loads', and the caps every question runs\nunder. A question is refused when what the month spent plus its cap passes\nthe budget, and waits, queued, while running questions' reservations\nleave too little."
+      "description": "FoundryQuestionBudget is a workspace's questions budget this calendar\r\nmonth (UTC), apart from its loads', and the caps every question runs\r\nunder. A question is refused when what the month spent plus its cap passes\r\nthe budget, and waits, queued, while running questions' reservations\r\nleave too little."
     },
     "v1FoundryQuestionEvent": {
       "type": "object",
@@ -5918,7 +6123,7 @@
         },
         "eventJson": {
           "type": "string",
-          "description": "The agent's event as JSON (ask_event.json): started, tool_call,\ntool_result or finished. A retried question's events go on from where\nits last attempt's ended, from a new started."
+          "description": "The agent's event as JSON (ask_event.json): started, tool_call,\r\ntool_result or finished. A retried question's events go on from where\r\nits last attempt's ended, from a new started."
         },
         "createdAt": {
           "type": "string",
@@ -5944,7 +6149,7 @@
         "FOUNDRY_READ_KIND_PDF"
       ],
       "default": "FOUNDRY_READ_KIND_UNSPECIFIED",
-      "description": "FoundryReadKind is how ontologies read a type of document.\n\n - FOUNDRY_READ_KIND_TEXT: Markdown, MDX and plain text: extracted as text through routes.\n - FOUNDRY_READ_KIND_TABLE: CSV, TSV, JSON, JSONL and Parquet: read once, at upload, as a table of\nits own, which mappings name by the document's id.\n - FOUNDRY_READ_KIND_PDF: PDF: read once, at upload, to its text (each page's, a form feed\nbetween pages), then extracted as that text through routes. One with no\ntext layer (a scan), encrypted or damaged can't be read."
+      "description": "FoundryReadKind is how ontologies read a type of document.\n\n - FOUNDRY_READ_KIND_TEXT: Markdown, MDX and plain text: extracted as text through routes.\n - FOUNDRY_READ_KIND_TABLE: CSV, TSV, JSON, JSONL and Parquet: read once, at upload, as a table of\r\nits own, which mappings name by the document's id.\n - FOUNDRY_READ_KIND_PDF: PDF: read once, at upload, to its text (each page's, a form feed\r\nbetween pages), then extracted as that text through routes. One with no\r\ntext layer (a scan), encrypted or damaged can't be read."
     },
     "v1FoundryResolveChoice": {
       "type": "object",
@@ -5996,7 +6201,7 @@
         },
         "value": {
           "$ref": "#/definitions/v1FoundryPropValue",
-          "description": "A prop decision's value as stored. A whole number within int64 is an\ninteger here, even a float property's (3.0 reads back as integer 3)."
+          "description": "A prop decision's value as stored. A whole number within int64 is an\r\ninteger here, even a float property's (3.0 reads back as integer 3)."
         },
         "decidedByUserId": {
           "type": "string"
@@ -6058,7 +6263,7 @@
         "FOUNDRY_TIER_MAX"
       ],
       "default": "FOUNDRY_TIER_UNSPECIFIED",
-      "description": "FoundryTier is a workspace's Helix Foundry plan. Free is the absence of a\npaid tier. Max grants everything Pro does."
+      "description": "FoundryTier is a workspace's Helix Foundry plan. Free is the absence of a\r\npaid tier. Max grants everything Pro does."
     },
     "v1FoundryUsage": {
       "type": "object",
@@ -6076,7 +6281,7 @@
         "totalUsdMicros": {
           "type": "string",
           "format": "int64",
-          "description": "What the month spent: every task's spent once (API_SOURCES is in\nLOADS), without questions' reservations."
+          "description": "What the month spent: every task's spent once (API_SOURCES is in\r\nLOADS), without questions' reservations."
         },
         "tasks": {
           "type": "array",
@@ -6087,7 +6292,7 @@
           "description": "One entry per task, in FoundryUsageTask's order."
         }
       },
-      "description": "FoundryUsage is a workspace's AI spend this calendar month (UTC), by task,\nwith each task's cap: the same sums the caps check. Spend on the\nworkspace's own model key counts as Helix's does, priced as its AI setting\nprices it (nothing for a model on its own hardware): Helix's monthly caps\ncount it too, as no ledger of own-key spend exists apart from them."
+      "description": "FoundryUsage is a workspace's AI spend this calendar month (UTC), by task,\r\nwith each task's cap: the same sums the caps check. Spend on the\r\nworkspace's own model key counts as Helix's does, priced as its AI setting\r\nprices it (nothing for a model on its own hardware): Helix's monthly caps\r\ncount it too, as no ledger of own-key spend exists apart from them."
     },
     "v1FoundryUsageEntry": {
       "type": "object",
@@ -6098,12 +6303,12 @@
         "spentUsdMicros": {
           "type": "string",
           "format": "int64",
-          "description": "In millionths of a US dollar: what the task's work spent, a running\njob's spend so far included."
+          "description": "In millionths of a US dollar: what the task's work spent, a running\r\njob's spend so far included."
         },
         "reservedUsdMicros": {
           "type": "string",
           "format": "int64",
-          "description": "What running work holds back of the cap beyond spent: only questions\nreserve (a running question's cap). Its cap refuses new work once\nspent, reserved and the work's own cap would pass it."
+          "description": "What running work holds back of the cap beyond spent: only questions\r\nreserve (a running question's cap). Its cap refuses new work once\r\nspent, reserved and the work's own cap would pass it."
         },
         "capUsdMicros": {
           "type": "string",
@@ -6130,7 +6335,7 @@
         "FOUNDRY_USAGE_TASK_QUESTIONS"
       ],
       "default": "FOUNDRY_USAGE_TASK_UNSPECIFIED",
-      "description": "FoundryUsageTask is a kind of model work a workspace's month of AI spend\nis broken down by (FoundryUsage). Ontology drafts (generations and\nrevisions) are not among them: they record tokens, not dollars; nor are\ngeneration titles, which record no spend at all.\n\n - FOUNDRY_USAGE_TASK_LOADS: Loads and extracts of the workspace's ontologies, created this month:\nreading documents into their graphs, which is all of a load's model\nspend (tables load at no model cost). Capped by foundry.graph.monthly_usd\n(config.FoundryGraphConfig.MonthBudget), the budget the graph worker\nchecks.\n - FOUNDRY_USAGE_TASK_API_SOURCES: What work no person started (refreshes, and extracts no one asked for)\nspent extracting the workspace's API sources' pieces this month, its\ndeleted sources' included. Capped by\nfoundry.events.max_system_usd_per_workspace_month. Part of LOADS' spend,\nso FoundryUsage.total_usd_micros counts it once, there.\n - FOUNDRY_USAGE_TASK_QUESTIONS: Questions charged this month (claimed in it, whenever asked), as the\nquestions budget counts them (FoundryQuestionBudget). Capped by\nfoundry.ask.monthly_usd."
+      "description": "FoundryUsageTask is a kind of model work a workspace's month of AI spend\r\nis broken down by (FoundryUsage). Ontology drafts (generations and\r\nrevisions) are not among them: they record tokens, not dollars; nor are\r\ngeneration titles, which record no spend at all.\n\n - FOUNDRY_USAGE_TASK_LOADS: Loads and extracts of the workspace's ontologies, created this month:\r\nreading documents into their graphs, which is all of a load's model\r\nspend (tables load at no model cost). Capped by foundry.graph.monthly_usd\r\n(config.FoundryGraphConfig.MonthBudget), the budget the graph worker\r\nchecks.\n - FOUNDRY_USAGE_TASK_API_SOURCES: What work no person started (refreshes, and extracts no one asked for)\r\nspent extracting the workspace's API sources' pieces this month, its\r\ndeleted sources' included. Capped by\r\nfoundry.events.max_system_usd_per_workspace_month. Part of LOADS' spend,\r\nso FoundryUsage.total_usd_micros counts it once, there.\n - FOUNDRY_USAGE_TASK_QUESTIONS: Questions charged this month (claimed in it, whenever asked), as the\r\nquestions budget counts them (FoundryQuestionBudget). Capped by\r\nfoundry.ask.monthly_usd."
     },
     "v1GetFoundryDocumentBytesResponse": {
       "type": "object",
@@ -6142,7 +6347,7 @@
         "data": {
           "type": "string",
           "format": "byte",
-          "description": "As uploaded, at most foundry.documents.max_bytes (1 MiB); base64 in\nJSON."
+          "description": "As uploaded, at most foundry.documents.max_bytes (1 MiB); base64 in\r\nJSON."
         }
       }
     },
@@ -6151,7 +6356,15 @@
       "properties": {
         "text": {
           "type": "string",
-          "description": "As uploaded, at most the type's cap; bytes that are not UTF-8 read as\nU+FFFD. A PDF's is its text as ontologies read it: each page's, with a\nform feed (U+000C) between pages, at most 1 MiB."
+          "description": "As uploaded, at most the type's cap; bytes that are not UTF-8 read as\r\nU+FFFD. A PDF's is its text as ontologies read it: each page's, with a\r\nform feed (U+000C) between pages, at most 1 MiB."
+        }
+      }
+    },
+    "v1GetGraphComputeResponse": {
+      "type": "object",
+      "properties": {
+        "run": {
+          "$ref": "#/definitions/v1GraphComputeRun"
         }
       }
     },
@@ -6185,7 +6398,7 @@
         },
         "subject": {
           "type": "string",
-          "description": "The Workspace user the service account acts as; an admin, to read\nthe Directory's users."
+          "description": "The Workspace user the service account acts as; an admin, to read\r\nthe Directory's users."
         },
         "eventDays": {
           "type": "integer",
@@ -6193,7 +6406,7 @@
           "description": "Days of past calendar events to keep, 1 to 365; 0 is 90."
         }
       },
-      "description": "GoogleWorkspaceConnectorConfig reads Drive, Calendar and the Directory\nas one Workspace user, through a service account with domain-wide\ndelegation."
+      "description": "GoogleWorkspaceConnectorConfig reads Drive, Calendar and the Directory\r\nas one Workspace user, through a service account with domain-wide\r\ndelegation."
     },
     "v1GranolaConnectorConfig": {
       "type": "object",
@@ -6204,7 +6417,87 @@
         },
         "transcripts": {
           "type": "boolean",
-          "description": "Also keep each note's transcript as a document, in the connection's\nTranscripts set beside its Notes. Off by default."
+          "description": "Also keep each note's transcript as a document, in the connection's\r\nTranscripts set beside its Notes. Off by default."
+        }
+      }
+    },
+    "v1GraphComputeRun": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "workspaceId": {
+          "type": "string"
+        },
+        "ontologyId": {
+          "type": "string"
+        },
+        "loadId": {
+          "type": "string"
+        },
+        "algorithm": {
+          "type": "string",
+          "description": "degree, wcc, pagerank and the recipes that follow."
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "description": "queued, running, succeeded, failed or cancelled."
+        },
+        "phase": {
+          "type": "string",
+          "description": "queued, computing, writing, finishing or done."
+        },
+        "nodeCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "edgeCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "topScore": {
+          "type": "number",
+          "format": "double",
+          "description": "The best score of the run; 0 when it has no rows."
+        },
+        "resultUri": {
+          "type": "string"
+        },
+        "error": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "startedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "finishedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "A read-only graph computation over one load."
+    },
+    "v1GraphComputeScore": {
+      "type": "object",
+      "properties": {
+        "nodeKey": {
+          "type": "string"
+        },
+        "score": {
+          "type": "number",
+          "format": "double"
+        },
+        "rank": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -6374,7 +6667,7 @@
         },
         "status": {
           "type": "string",
-          "description": "The question's status when read: once it is not queued or running and\nthe events reach last_seq, none follows."
+          "description": "The question's status when read: once it is not queued or running and\r\nthe events reach last_seq, none follows."
         },
         "lastSeq": {
           "type": "integer",
@@ -6416,6 +6709,30 @@
         }
       }
     },
+    "v1ListGraphComputeScoresResponse": {
+      "type": "object",
+      "properties": {
+        "scores": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1GraphComputeScore"
+          }
+        }
+      }
+    },
+    "v1ListGraphComputesResponse": {
+      "type": "object",
+      "properties": {
+        "runs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1GraphComputeRun"
+          }
+        }
+      }
+    },
     "v1ListOntologyGenerationsResponse": {
       "type": "object",
       "properties": {
@@ -6448,7 +6765,7 @@
           "description": "Internal integration secret (ntn_… or secret_…); write-only."
         }
       },
-      "description": "NotionConnectorConfig reads the pages and databases shared with a Notion\nintegration."
+      "description": "NotionConnectorConfig reads the pages and databases shared with a Notion\r\nintegration."
     },
     "v1OntologyEdit": {
       "type": "object",
@@ -6470,7 +6787,7 @@
         "ONTOLOGY_FORMAT_AGENT_BUNDLE"
       ],
       "default": "ONTOLOGY_FORMAT_UNSPECIFIED",
-      "description": "OntologyFormat says what a version's definition holds.\n\n - ONTOLOGY_FORMAT_FOUNDRY_V1: Entities, relationships, rules and constraints.\n - ONTOLOGY_FORMAT_AGENT_BUNDLE: The ontology agent's draft: format, status, ontology_toml, mappings_toml,\ndraft, questions, summary and usage."
+      "description": "OntologyFormat says what a version's definition holds.\n\n - ONTOLOGY_FORMAT_FOUNDRY_V1: Entities, relationships, rules and constraints.\n - ONTOLOGY_FORMAT_AGENT_BUNDLE: The ontology agent's draft: format, status, ontology_toml, mappings_toml,\r\ndraft, questions, summary and usage."
     },
     "v1OntologyGeneration": {
       "type": "object",
@@ -6497,7 +6814,7 @@
         },
         "baseVersionId": {
           "type": "string",
-          "description": "The version that was current when it was requested; the draft extends it.\nUnset for a revision, whose parent is revision.parent_version_id."
+          "description": "The version that was current when it was requested; the draft extends it.\r\nUnset for a revision, whose parent is revision.parent_version_id."
         },
         "attempts": {
           "type": "integer",
@@ -6509,7 +6826,7 @@
         },
         "resultVersionId": {
           "type": "string",
-          "description": "The draft it stored, once succeeded. It is not made current, unless\nload_when_ready made it the ontology's first."
+          "description": "The draft it stored, once succeeded. It is not made current, unless\r\nload_when_ready made it the ontology's first."
         },
         "model": {
           "type": "string"
@@ -6540,7 +6857,7 @@
         },
         "title": {
           "type": "string",
-          "description": "A one-line, plain-text title of the goal, at most 60 characters, for\nlists and headings; the goal holds the full text. Empty without a goal and\nfor generations queued before titles."
+          "description": "A one-line, plain-text title of the goal, at most 60 characters, for\r\nlists and headings; the goal holds the full text. Empty without a goal and\r\nfor generations queued before titles."
         },
         "documentSetIds": {
           "type": "array",
@@ -6559,15 +6876,15 @@
             "type": "object",
             "$ref": "#/definitions/v1OntologyGenerationDocument"
           },
-          "description": "The table files of its document sets it drafts from beside the tables:\neach is a table of its own, which mappings name by its document id. A\nrevision's are its parent's."
+          "description": "The table files of its document sets it drafts from beside the tables:\r\neach is a table of its own, which mappings name by its document id. A\r\nrevision's are its parent's."
         },
         "sample": {
           "type": "string",
-          "description": "The sample it drafts from in place of the AI\n(GenerateOntologyRequest.sample); empty for an AI draft."
+          "description": "The sample it drafts from in place of the AI\r\n(GenerateOntologyRequest.sample); empty for an AI draft."
         },
         "loadWhenReady": {
           "type": "boolean",
-          "description": "Whether its draft is made current and loaded once stored, and its\nrequester emailed when that load ends\n(GenerateOntologyRequest.load_when_ready)."
+          "description": "Whether its draft is made current and loaded once stored, and its\r\nrequester emailed when that load ends\r\n(GenerateOntologyRequest.load_when_ready)."
         }
       },
       "description": "OntologyGeneration is one request to draft a version of an ontology."
@@ -6582,7 +6899,7 @@
           "type": "string"
         }
       },
-      "description": "OntologyGenerationDocument is a table file a generation drafts from, and\nthe set it was in then."
+      "description": "OntologyGenerationDocument is a table file a generation drafts from, and\r\nthe set it was in then."
     },
     "v1OntologyGenerationResponse": {
       "type": "object",
@@ -6626,7 +6943,7 @@
           "description": "The item's whole TOML snippet. A revision's snippets add up to at most 1 MiB."
         }
       },
-      "description": "Puts an item's TOML snippet in the draft, replacing the item if the draft\nhas it: an extraction route, a rule, a constraint, or a type's identifiers."
+      "description": "Puts an item's TOML snippet in the draft, replacing the item if the draft\r\nhas it: an extraction route, a rule, a constraint, or a type's identifiers."
     },
     "v1OntologyRemove": {
       "type": "object",
@@ -6650,11 +6967,11 @@
         },
         "resultJson": {
           "type": "string",
-          "description": "The engine's result once it ended: status, findings and cards, without\nthe definition, refusals included. Only GetOntologyGeneration has it."
+          "description": "The engine's result once it ended: status, findings and cards, without\r\nthe definition, refusals included. Only GetOntologyGeneration has it."
         },
         "resultWithheld": {
           "type": "boolean",
-          "description": "True in place of result_json for a caller who can't query the\nontology's database (database.query.read on its project): the result\nmeasures its load, so its cards, counts and findings are withheld."
+          "description": "True in place of result_json for a caller who can't query the\r\nontology's database (database.query.read on its project): the result\r\nmeasures its load, so its cards, counts and findings are withheld."
         }
       },
       "description": "What a revision generation revises, and what came of it."
@@ -6713,14 +7030,14 @@
         },
         "evidenceWithheld": {
           "type": "boolean",
-          "description": "The definition's draft items were sent without their evidence cards: a\nrevised version's cards measure the ontology's load, and the caller\ncan't query its database (database.query.read on its project)."
+          "description": "The definition's draft items were sent without their evidence cards: a\r\nrevised version's cards measure the ontology's load, and the caller\r\ncan't query its database (database.query.read on its project)."
         },
         "documentSetIds": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "Its scope: the document sets its loads read. A load's documents are the\nuploaded documents of these sets; empty reads none. A generated\nversion's are the sets its generation picked, a revised one's its\nparent's plus the sets its revised routes name; a hand-written\nDefinition v1 reads none."
+          "description": "Its scope: the document sets its loads read. A load's documents are the\r\nuploaded documents of these sets; empty reads none. A generated\r\nversion's are the sets its generation picked, a revised one's its\r\nparent's plus the sets its revised routes name; a hand-written\r\nDefinition v1 reads none."
         }
       },
       "description": "OntologyVersion is one immutable ontology of a workspace."
@@ -6774,7 +7091,7 @@
           "type": "string"
         }
       },
-      "description": "ReadFoundryGraphResponse is the agent's ReadResult (read_result.json): one\nresult per read, in order, each its value or its own error."
+      "description": "ReadFoundryGraphResponse is the agent's ReadResult (read_result.json): one\r\nresult per read, in order, each its value or its own error."
     },
     "v1ResumeFoundryProRequest": {
       "type": "object",
@@ -6857,7 +7174,7 @@
       "properties": {
         "botToken": {
           "type": "string",
-          "description": "Bot User OAuth token (xoxb-…) of an app installed in the Slack\nworkspace; write-only."
+          "description": "Bot User OAuth token (xoxb-…) of an app installed in the Slack\r\nworkspace; write-only."
         },
         "historyDays": {
           "type": "integer",
@@ -6866,6 +7183,14 @@
         }
       },
       "description": "SlackConnectorConfig reads the channels a Slack app was added to."
+    },
+    "v1StartGraphComputeResponse": {
+      "type": "object",
+      "properties": {
+        "run": {
+          "$ref": "#/definitions/v1GraphComputeRun"
+        }
+      }
     },
     "v1StripeConnectorConfig": {
       "type": "object",

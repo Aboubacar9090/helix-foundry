@@ -67,7 +67,7 @@
           "format": "int64"
         }
       },
-      "description": "EventSourceCapacity is how full an event source's table is, against the\ncaps every table has. Output only.",
+      "description": "EventSourceCapacity is how full an event source's table is, against the\r\ncaps every table has. Output only.",
       "readOnly": true
     },
     "v1EventSourceField": {
@@ -124,7 +124,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "description": "1 to 128 bytes, each 0x21-0x7E; unique per source: a later piece with the\nsame id replaces it."
+          "description": "1 to 128 bytes, each 0x21-0x7E; unique per source: a later piece with the\r\nsame id replaces it."
         },
         "occurredAt": {
           "type": "string",

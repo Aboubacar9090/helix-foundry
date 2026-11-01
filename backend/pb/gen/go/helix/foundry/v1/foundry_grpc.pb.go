@@ -93,6 +93,10 @@ const (
 	FoundryService_ListFoundryQuestionEvents_FullMethodName             = "/helix.foundry.v1.FoundryService/ListFoundryQuestionEvents"
 	FoundryService_CancelFoundryQuestion_FullMethodName                 = "/helix.foundry.v1.FoundryService/CancelFoundryQuestion"
 	FoundryService_StopFoundryLoadEnrichment_FullMethodName             = "/helix.foundry.v1.FoundryService/StopFoundryLoadEnrichment"
+	FoundryService_StartGraphCompute_FullMethodName                     = "/helix.foundry.v1.FoundryService/StartGraphCompute"
+	FoundryService_GetGraphCompute_FullMethodName                       = "/helix.foundry.v1.FoundryService/GetGraphCompute"
+	FoundryService_ListGraphComputes_FullMethodName                     = "/helix.foundry.v1.FoundryService/ListGraphComputes"
+	FoundryService_ListGraphComputeScores_FullMethodName                = "/helix.foundry.v1.FoundryService/ListGraphComputeScores"
 	FoundryService_GetFoundryUsage_FullMethodName                       = "/helix.foundry.v1.FoundryService/GetFoundryUsage"
 	FoundryService_GetFoundryEnrichment_FullMethodName                  = "/helix.foundry.v1.FoundryService/GetFoundryEnrichment"
 	FoundryService_UpdateFoundryEnrichment_FullMethodName               = "/helix.foundry.v1.FoundryService/UpdateFoundryEnrichment"
@@ -200,6 +204,12 @@ type FoundryServiceClient interface {
 	ListFoundryQuestionEvents(ctx context.Context, in *ListFoundryQuestionEventsRequest, opts ...grpc.CallOption) (*ListFoundryQuestionEventsResponse, error)
 	CancelFoundryQuestion(ctx context.Context, in *CancelFoundryQuestionRequest, opts ...grpc.CallOption) (*FoundryQuestionResponse, error)
 	StopFoundryLoadEnrichment(ctx context.Context, in *StopFoundryLoadEnrichmentRequest, opts ...grpc.CallOption) (*FoundryLoadResponse, error)
+	// Helix Foundry graph compute: read-only computations over a load. A run
+	// is queued and a worker computes it; it never writes the graph.
+	StartGraphCompute(ctx context.Context, in *StartGraphComputeRequest, opts ...grpc.CallOption) (*StartGraphComputeResponse, error)
+	GetGraphCompute(ctx context.Context, in *GetGraphComputeRequest, opts ...grpc.CallOption) (*GetGraphComputeResponse, error)
+	ListGraphComputes(ctx context.Context, in *ListGraphComputesRequest, opts ...grpc.CallOption) (*ListGraphComputesResponse, error)
+	ListGraphComputeScores(ctx context.Context, in *ListGraphComputeScoresRequest, opts ...grpc.CallOption) (*ListGraphComputeScoresResponse, error)
 	// Helix Foundry usage: the workspace's AI spend this month, by task
 	//
 	// The UTC calendar month's spend of loads, of API sources' extraction no
@@ -960,6 +970,46 @@ func (c *foundryServiceClient) StopFoundryLoadEnrichment(ctx context.Context, in
 	return out, nil
 }
 
+func (c *foundryServiceClient) StartGraphCompute(ctx context.Context, in *StartGraphComputeRequest, opts ...grpc.CallOption) (*StartGraphComputeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StartGraphComputeResponse)
+	err := c.cc.Invoke(ctx, FoundryService_StartGraphCompute_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *foundryServiceClient) GetGraphCompute(ctx context.Context, in *GetGraphComputeRequest, opts ...grpc.CallOption) (*GetGraphComputeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetGraphComputeResponse)
+	err := c.cc.Invoke(ctx, FoundryService_GetGraphCompute_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *foundryServiceClient) ListGraphComputes(ctx context.Context, in *ListGraphComputesRequest, opts ...grpc.CallOption) (*ListGraphComputesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListGraphComputesResponse)
+	err := c.cc.Invoke(ctx, FoundryService_ListGraphComputes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *foundryServiceClient) ListGraphComputeScores(ctx context.Context, in *ListGraphComputeScoresRequest, opts ...grpc.CallOption) (*ListGraphComputeScoresResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListGraphComputeScoresResponse)
+	err := c.cc.Invoke(ctx, FoundryService_ListGraphComputeScores_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *foundryServiceClient) GetFoundryUsage(ctx context.Context, in *GetFoundryUsageRequest, opts ...grpc.CallOption) (*FoundryUsageResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(FoundryUsageResponse)
@@ -1128,6 +1178,12 @@ type FoundryServiceServer interface {
 	ListFoundryQuestionEvents(context.Context, *ListFoundryQuestionEventsRequest) (*ListFoundryQuestionEventsResponse, error)
 	CancelFoundryQuestion(context.Context, *CancelFoundryQuestionRequest) (*FoundryQuestionResponse, error)
 	StopFoundryLoadEnrichment(context.Context, *StopFoundryLoadEnrichmentRequest) (*FoundryLoadResponse, error)
+	// Helix Foundry graph compute: read-only computations over a load. A run
+	// is queued and a worker computes it; it never writes the graph.
+	StartGraphCompute(context.Context, *StartGraphComputeRequest) (*StartGraphComputeResponse, error)
+	GetGraphCompute(context.Context, *GetGraphComputeRequest) (*GetGraphComputeResponse, error)
+	ListGraphComputes(context.Context, *ListGraphComputesRequest) (*ListGraphComputesResponse, error)
+	ListGraphComputeScores(context.Context, *ListGraphComputeScoresRequest) (*ListGraphComputeScoresResponse, error)
 	// Helix Foundry usage: the workspace's AI spend this month, by task
 	//
 	// The UTC calendar month's spend of loads, of API sources' extraction no
@@ -1375,6 +1431,18 @@ func (UnimplementedFoundryServiceServer) CancelFoundryQuestion(context.Context, 
 }
 func (UnimplementedFoundryServiceServer) StopFoundryLoadEnrichment(context.Context, *StopFoundryLoadEnrichmentRequest) (*FoundryLoadResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StopFoundryLoadEnrichment not implemented")
+}
+func (UnimplementedFoundryServiceServer) StartGraphCompute(context.Context, *StartGraphComputeRequest) (*StartGraphComputeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartGraphCompute not implemented")
+}
+func (UnimplementedFoundryServiceServer) GetGraphCompute(context.Context, *GetGraphComputeRequest) (*GetGraphComputeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGraphCompute not implemented")
+}
+func (UnimplementedFoundryServiceServer) ListGraphComputes(context.Context, *ListGraphComputesRequest) (*ListGraphComputesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListGraphComputes not implemented")
+}
+func (UnimplementedFoundryServiceServer) ListGraphComputeScores(context.Context, *ListGraphComputeScoresRequest) (*ListGraphComputeScoresResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListGraphComputeScores not implemented")
 }
 func (UnimplementedFoundryServiceServer) GetFoundryUsage(context.Context, *GetFoundryUsageRequest) (*FoundryUsageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFoundryUsage not implemented")
@@ -2731,6 +2799,78 @@ func _FoundryService_StopFoundryLoadEnrichment_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FoundryService_StartGraphCompute_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartGraphComputeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FoundryServiceServer).StartGraphCompute(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FoundryService_StartGraphCompute_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FoundryServiceServer).StartGraphCompute(ctx, req.(*StartGraphComputeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FoundryService_GetGraphCompute_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGraphComputeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FoundryServiceServer).GetGraphCompute(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FoundryService_GetGraphCompute_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FoundryServiceServer).GetGraphCompute(ctx, req.(*GetGraphComputeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FoundryService_ListGraphComputes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListGraphComputesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FoundryServiceServer).ListGraphComputes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FoundryService_ListGraphComputes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FoundryServiceServer).ListGraphComputes(ctx, req.(*ListGraphComputesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FoundryService_ListGraphComputeScores_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListGraphComputeScoresRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FoundryServiceServer).ListGraphComputeScores(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FoundryService_ListGraphComputeScores_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FoundryServiceServer).ListGraphComputeScores(ctx, req.(*ListGraphComputeScoresRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _FoundryService_GetFoundryUsage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetFoundryUsageRequest)
 	if err := dec(in); err != nil {
@@ -3155,6 +3295,22 @@ var FoundryService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StopFoundryLoadEnrichment",
 			Handler:    _FoundryService_StopFoundryLoadEnrichment_Handler,
+		},
+		{
+			MethodName: "StartGraphCompute",
+			Handler:    _FoundryService_StartGraphCompute_Handler,
+		},
+		{
+			MethodName: "GetGraphCompute",
+			Handler:    _FoundryService_GetGraphCompute_Handler,
+		},
+		{
+			MethodName: "ListGraphComputes",
+			Handler:    _FoundryService_ListGraphComputes_Handler,
+		},
+		{
+			MethodName: "ListGraphComputeScores",
+			Handler:    _FoundryService_ListGraphComputeScores_Handler,
 		},
 		{
 			MethodName: "GetFoundryUsage",

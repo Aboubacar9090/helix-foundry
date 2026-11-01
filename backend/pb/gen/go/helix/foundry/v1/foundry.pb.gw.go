@@ -4161,6 +4161,280 @@ func local_request_FoundryService_StopFoundryLoadEnrichment_0(ctx context.Contex
 	return msg, metadata, err
 }
 
+func request_FoundryService_StartGraphCompute_0(ctx context.Context, marshaler runtime.Marshaler, client FoundryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq StartGraphComputeRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	val, ok := pathParams["workspace_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "workspace_id")
+	}
+	protoReq.WorkspaceId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "workspace_id", err)
+	}
+	val, ok = pathParams["ontology_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "ontology_id")
+	}
+	protoReq.OntologyId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "ontology_id", err)
+	}
+	msg, err := client.StartGraphCompute(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_FoundryService_StartGraphCompute_0(ctx context.Context, marshaler runtime.Marshaler, server FoundryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq StartGraphComputeRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	val, ok := pathParams["workspace_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "workspace_id")
+	}
+	protoReq.WorkspaceId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "workspace_id", err)
+	}
+	val, ok = pathParams["ontology_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "ontology_id")
+	}
+	protoReq.OntologyId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "ontology_id", err)
+	}
+	msg, err := server.StartGraphCompute(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+func request_FoundryService_GetGraphCompute_0(ctx context.Context, marshaler runtime.Marshaler, client FoundryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq GetGraphComputeRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	val, ok := pathParams["workspace_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "workspace_id")
+	}
+	protoReq.WorkspaceId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "workspace_id", err)
+	}
+	val, ok = pathParams["ontology_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "ontology_id")
+	}
+	protoReq.OntologyId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "ontology_id", err)
+	}
+	val, ok = pathParams["run_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "run_id")
+	}
+	protoReq.RunId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "run_id", err)
+	}
+	msg, err := client.GetGraphCompute(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_FoundryService_GetGraphCompute_0(ctx context.Context, marshaler runtime.Marshaler, server FoundryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq GetGraphComputeRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	val, ok := pathParams["workspace_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "workspace_id")
+	}
+	protoReq.WorkspaceId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "workspace_id", err)
+	}
+	val, ok = pathParams["ontology_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "ontology_id")
+	}
+	protoReq.OntologyId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "ontology_id", err)
+	}
+	val, ok = pathParams["run_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "run_id")
+	}
+	protoReq.RunId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "run_id", err)
+	}
+	msg, err := server.GetGraphCompute(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+var filter_FoundryService_ListGraphComputes_0 = &utilities.DoubleArray{Encoding: map[string]int{"workspace_id": 0, "ontology_id": 1}, Base: []int{1, 1, 2, 0, 0}, Check: []int{0, 1, 1, 2, 3}}
+
+func request_FoundryService_ListGraphComputes_0(ctx context.Context, marshaler runtime.Marshaler, client FoundryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ListGraphComputesRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	val, ok := pathParams["workspace_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "workspace_id")
+	}
+	protoReq.WorkspaceId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "workspace_id", err)
+	}
+	val, ok = pathParams["ontology_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "ontology_id")
+	}
+	protoReq.OntologyId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "ontology_id", err)
+	}
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_FoundryService_ListGraphComputes_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := client.ListGraphComputes(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_FoundryService_ListGraphComputes_0(ctx context.Context, marshaler runtime.Marshaler, server FoundryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ListGraphComputesRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	val, ok := pathParams["workspace_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "workspace_id")
+	}
+	protoReq.WorkspaceId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "workspace_id", err)
+	}
+	val, ok = pathParams["ontology_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "ontology_id")
+	}
+	protoReq.OntologyId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "ontology_id", err)
+	}
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_FoundryService_ListGraphComputes_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.ListGraphComputes(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+var filter_FoundryService_ListGraphComputeScores_0 = &utilities.DoubleArray{Encoding: map[string]int{"workspace_id": 0, "ontology_id": 1, "run_id": 2}, Base: []int{1, 1, 2, 3, 0, 0, 0}, Check: []int{0, 1, 1, 1, 2, 3, 4}}
+
+func request_FoundryService_ListGraphComputeScores_0(ctx context.Context, marshaler runtime.Marshaler, client FoundryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ListGraphComputeScoresRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	val, ok := pathParams["workspace_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "workspace_id")
+	}
+	protoReq.WorkspaceId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "workspace_id", err)
+	}
+	val, ok = pathParams["ontology_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "ontology_id")
+	}
+	protoReq.OntologyId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "ontology_id", err)
+	}
+	val, ok = pathParams["run_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "run_id")
+	}
+	protoReq.RunId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "run_id", err)
+	}
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_FoundryService_ListGraphComputeScores_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := client.ListGraphComputeScores(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_FoundryService_ListGraphComputeScores_0(ctx context.Context, marshaler runtime.Marshaler, server FoundryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq ListGraphComputeScoresRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	val, ok := pathParams["workspace_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "workspace_id")
+	}
+	protoReq.WorkspaceId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "workspace_id", err)
+	}
+	val, ok = pathParams["ontology_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "ontology_id")
+	}
+	protoReq.OntologyId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "ontology_id", err)
+	}
+	val, ok = pathParams["run_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "run_id")
+	}
+	protoReq.RunId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "run_id", err)
+	}
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_FoundryService_ListGraphComputeScores_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.ListGraphComputeScores(ctx, &protoReq)
+	return msg, metadata, err
+}
+
 func request_FoundryService_GetFoundryUsage_0(ctx context.Context, marshaler runtime.Marshaler, client FoundryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq GetFoundryUsageRequest
@@ -5911,6 +6185,86 @@ func RegisterFoundryServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		}
 		forward_FoundryService_StopFoundryLoadEnrichment_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodPost, pattern_FoundryService_StartGraphCompute_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/helix.foundry.v1.FoundryService/StartGraphCompute", runtime.WithHTTPPathPattern("/v1/workspaces/{workspace_id}/foundry/ontologies/{ontology_id}/graph/compute"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_FoundryService_StartGraphCompute_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_FoundryService_StartGraphCompute_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_FoundryService_GetGraphCompute_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/helix.foundry.v1.FoundryService/GetGraphCompute", runtime.WithHTTPPathPattern("/v1/workspaces/{workspace_id}/foundry/ontologies/{ontology_id}/graph/compute/{run_id}"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_FoundryService_GetGraphCompute_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_FoundryService_GetGraphCompute_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_FoundryService_ListGraphComputes_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/helix.foundry.v1.FoundryService/ListGraphComputes", runtime.WithHTTPPathPattern("/v1/workspaces/{workspace_id}/foundry/ontologies/{ontology_id}/graph/compute"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_FoundryService_ListGraphComputes_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_FoundryService_ListGraphComputes_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_FoundryService_ListGraphComputeScores_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/helix.foundry.v1.FoundryService/ListGraphComputeScores", runtime.WithHTTPPathPattern("/v1/workspaces/{workspace_id}/foundry/ontologies/{ontology_id}/graph/compute/{run_id}/scores"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_FoundryService_ListGraphComputeScores_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_FoundryService_ListGraphComputeScores_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	mux.Handle(http.MethodGet, pattern_FoundryService_GetFoundryUsage_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -7332,6 +7686,74 @@ func RegisterFoundryServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		}
 		forward_FoundryService_StopFoundryLoadEnrichment_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodPost, pattern_FoundryService_StartGraphCompute_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/helix.foundry.v1.FoundryService/StartGraphCompute", runtime.WithHTTPPathPattern("/v1/workspaces/{workspace_id}/foundry/ontologies/{ontology_id}/graph/compute"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_FoundryService_StartGraphCompute_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_FoundryService_StartGraphCompute_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_FoundryService_GetGraphCompute_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/helix.foundry.v1.FoundryService/GetGraphCompute", runtime.WithHTTPPathPattern("/v1/workspaces/{workspace_id}/foundry/ontologies/{ontology_id}/graph/compute/{run_id}"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_FoundryService_GetGraphCompute_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_FoundryService_GetGraphCompute_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_FoundryService_ListGraphComputes_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/helix.foundry.v1.FoundryService/ListGraphComputes", runtime.WithHTTPPathPattern("/v1/workspaces/{workspace_id}/foundry/ontologies/{ontology_id}/graph/compute"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_FoundryService_ListGraphComputes_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_FoundryService_ListGraphComputes_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_FoundryService_ListGraphComputeScores_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/helix.foundry.v1.FoundryService/ListGraphComputeScores", runtime.WithHTTPPathPattern("/v1/workspaces/{workspace_id}/foundry/ontologies/{ontology_id}/graph/compute/{run_id}/scores"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_FoundryService_ListGraphComputeScores_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_FoundryService_ListGraphComputeScores_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	mux.Handle(http.MethodGet, pattern_FoundryService_GetFoundryUsage_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -7528,6 +7950,10 @@ var (
 	pattern_FoundryService_ListFoundryQuestionEvents_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7, 2, 8}, []string{"v1", "workspaces", "workspace_id", "foundry", "ontologies", "ontology_id", "questions", "id", "events"}, ""))
 	pattern_FoundryService_CancelFoundryQuestion_0                 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"v1", "workspaces", "workspace_id", "foundry", "ontologies", "ontology_id", "questions", "id"}, "cancel"))
 	pattern_FoundryService_StopFoundryLoadEnrichment_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"v1", "workspaces", "workspace_id", "foundry", "ontologies", "ontology_id", "loads", "id"}, "stop-enrichment"))
+	pattern_FoundryService_StartGraphCompute_0                     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 2, 7}, []string{"v1", "workspaces", "workspace_id", "foundry", "ontologies", "ontology_id", "graph", "compute"}, ""))
+	pattern_FoundryService_GetGraphCompute_0                       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 2, 7, 1, 0, 4, 1, 5, 8}, []string{"v1", "workspaces", "workspace_id", "foundry", "ontologies", "ontology_id", "graph", "compute", "run_id"}, ""))
+	pattern_FoundryService_ListGraphComputes_0                     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 2, 7}, []string{"v1", "workspaces", "workspace_id", "foundry", "ontologies", "ontology_id", "graph", "compute"}, ""))
+	pattern_FoundryService_ListGraphComputeScores_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 2, 7, 1, 0, 4, 1, 5, 8, 2, 9}, []string{"v1", "workspaces", "workspace_id", "foundry", "ontologies", "ontology_id", "graph", "compute", "run_id", "scores"}, ""))
 	pattern_FoundryService_GetFoundryUsage_0                       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "workspaces", "workspace_id", "foundry", "usage"}, ""))
 	pattern_FoundryService_GetFoundryEnrichment_0                  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "workspaces", "workspace_id", "foundry", "enrichment"}, ""))
 	pattern_FoundryService_UpdateFoundryEnrichment_0               = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "workspaces", "workspace_id", "foundry", "enrichment"}, ""))
@@ -7611,6 +8037,10 @@ var (
 	forward_FoundryService_ListFoundryQuestionEvents_0             = runtime.ForwardResponseMessage
 	forward_FoundryService_CancelFoundryQuestion_0                 = runtime.ForwardResponseMessage
 	forward_FoundryService_StopFoundryLoadEnrichment_0             = runtime.ForwardResponseMessage
+	forward_FoundryService_StartGraphCompute_0                     = runtime.ForwardResponseMessage
+	forward_FoundryService_GetGraphCompute_0                       = runtime.ForwardResponseMessage
+	forward_FoundryService_ListGraphComputes_0                     = runtime.ForwardResponseMessage
+	forward_FoundryService_ListGraphComputeScores_0                = runtime.ForwardResponseMessage
 	forward_FoundryService_GetFoundryUsage_0                       = runtime.ForwardResponseMessage
 	forward_FoundryService_GetFoundryEnrichment_0                  = runtime.ForwardResponseMessage
 	forward_FoundryService_UpdateFoundryEnrichment_0               = runtime.ForwardResponseMessage

@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "helix/foundry/directory/v1/directory.proto",
-    "description": "The directory of a standalone Foundry install: its one owner, the\nworkspaces they make, and the projects and HelixDB databases (tenants)\nontologies load into. A hosted deployment serves the same routes from its\nown control plane; these are the ones the Foundry site calls, with the same\npaths, verbs and JSON, carrying the fields the site reads.",
+    "description": "The directory of a standalone Foundry install: its one owner, the\r\nworkspaces they make, and the projects and HelixDB databases (tenants)\r\nontologies load into. A hosted deployment serves the same routes from its\r\nown control plane; these are the ones the Foundry site calls, with the same\r\npaths, verbs and JSON, carrying the fields the site reads.",
     "version": "version not set"
   },
   "tags": [

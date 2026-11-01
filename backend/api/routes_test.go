@@ -260,6 +260,26 @@ func (r *routeRecorder) ReadFoundryGraph(_ context.Context, req *foundryv1.ReadF
 	return &foundryv1.ReadFoundryGraphResponse{}, nil
 }
 
+func (r *routeRecorder) StartGraphCompute(_ context.Context, req *foundryv1.StartGraphComputeRequest) (*foundryv1.StartGraphComputeResponse, error) {
+	r.hit("StartGraphCompute", req, req.GetLoadId()+" "+req.GetAlgorithm()+" "+req.GetName())
+	return &foundryv1.StartGraphComputeResponse{}, nil
+}
+
+func (r *routeRecorder) GetGraphCompute(_ context.Context, req *foundryv1.GetGraphComputeRequest) (*foundryv1.GetGraphComputeResponse, error) {
+	r.hit("GetGraphCompute", req, req.GetRunId())
+	return &foundryv1.GetGraphComputeResponse{}, nil
+}
+
+func (r *routeRecorder) ListGraphComputes(_ context.Context, req *foundryv1.ListGraphComputesRequest) (*foundryv1.ListGraphComputesResponse, error) {
+	r.hit("ListGraphComputes", req, "")
+	return &foundryv1.ListGraphComputesResponse{}, nil
+}
+
+func (r *routeRecorder) ListGraphComputeScores(_ context.Context, req *foundryv1.ListGraphComputeScoresRequest) (*foundryv1.ListGraphComputeScoresResponse, error) {
+	r.hit("ListGraphComputeScores", req, fmt.Sprintf("%s %d %d", req.GetRunId(), req.GetLimit(), req.GetOffset()))
+	return &foundryv1.ListGraphComputeScoresResponse{}, nil
+}
+
 func (r *routeRecorder) AskFoundryQuestion(_ context.Context, req *foundryv1.AskFoundryQuestionRequest) (*foundryv1.FoundryQuestionResponse, error) {
 	r.hit("AskFoundryQuestion", req, req.GetLoadId()+"/"+req.GetThreadId()+"/"+req.GetQuestion())
 	return &foundryv1.FoundryQuestionResponse{}, nil
@@ -405,6 +425,10 @@ func TestFoundryRoutes(t *testing.T) {
 		{http.MethodPost, o + "/ont-1/loads/l-1:set-current", `{}`, "SetCurrentFoundryLoad ws-1 ont-1 l-1"},
 		{http.MethodDelete, o + "/ont-1/loads/l-1", "", "DeleteFoundryLoad ws-1 ont-1 l-1"},
 		{http.MethodPost, o + "/ont-1/loads/l-1:read", `{"readsJson":"[]"}`, "ReadFoundryGraph ws-1 ont-1 l-1 []"},
+		{http.MethodPost, o + "/ont-1/graph/compute", `{"loadId":"l-1","algorithm":"degree","name":"d","clientToken":"c"}`, "StartGraphCompute ws-1 ont-1 l-1 degree d"},
+		{http.MethodGet, o + "/ont-1/graph/compute/r-1", "", "GetGraphCompute ws-1 ont-1 r-1"},
+		{http.MethodGet, o + "/ont-1/graph/compute", "", "ListGraphComputes ws-1 ont-1 "},
+		{http.MethodGet, o + "/ont-1/graph/compute/r-1/scores?limit=10&offset=5", "", "ListGraphComputeScores ws-1 ont-1 r-1 10 5"},
 		{http.MethodPost, o + "/ont-1/questions", `{"loadId":"l-1","threadId":"t-1","question":"who?","clientToken":"c"}`,
 			"AskFoundryQuestion ws-1 ont-1 l-1/t-1/who?"},
 		{http.MethodGet, o + "/ont-1/questions/q-1", "", "GetFoundryQuestion ws-1 ont-1 q-1"},

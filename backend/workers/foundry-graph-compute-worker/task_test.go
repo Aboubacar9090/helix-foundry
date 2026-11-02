@@ -1,9 +1,11 @@
 package foundrygraphcomputeworker
 
 import (
+	"math"
 	"strings"
 	"testing"
 
+	"github.com/helixdb/helix-foundry/backend/graphcompute"
 	"github.com/helixdb/helix-foundry/backend/store/model"
 )
 
@@ -16,6 +18,66 @@ func TestDegreeQuery(t *testing.T) {
 	for _, want := range []string{"graph_degree", "out_degrees", "in_degrees", "$from", "$to", "foundry_load", "load-1"} {
 		if !strings.Contains(text, want) {
 			t.Fatalf("degreeQuery does not contain %q: %s", want, text)
+		}
+	}
+}
+
+func TestEdgesQuery(t *testing.T) {
+	query, err := edgesQuery("load-1", 100)
+	if err != nil {
+		t.Fatalf("edgesQuery: %v", err)
+	}
+	text := string(query)
+	for _, want := range []string{"graph_edges", "edge_properties", "foundry_load", "load-1", "limit"} {
+		if !strings.Contains(text, want) {
+			t.Fatalf("edgesQuery does not contain %q: %s", want, text)
+		}
+	}
+}
+
+func TestParseEdges(t *testing.T) {
+	edges, err := parseEdges([]byte(`{"edges":[
+		{"$from":1,"$to":2},
+		{"$from":"a","$to":"b"},
+		{"$from":"missing"}
+	]}`))
+	if err != nil {
+		t.Fatalf("parseEdges: %v", err)
+	}
+	if len(edges) != 2 || edges[0] != (graphcompute.Edge{From: "1", To: "2"}) || edges[1] != (graphcompute.Edge{From: "a", To: "b"}) {
+		t.Fatalf("parseEdges = %#v", edges)
+	}
+}
+
+func TestWCCScores(t *testing.T) {
+	scores := wccScores("run-1", []graphcompute.Edge{
+		{From: "a", To: "b"},
+		{From: "b", To: "c"},
+		{From: "d", To: "e"},
+	})
+	if len(scores) != 5 {
+		t.Fatalf("scores = %#v, want 5 nodes", scores)
+	}
+	if scores[0].Score != 3 || scores[0].Rank != 1 {
+		t.Fatalf("first score = %#v, want a 3-node component at rank 1", scores[0])
+	}
+	if scores[3].Score != 2 || scores[3].Rank != 4 {
+		t.Fatalf("fourth score = %#v, want a 2-node component at rank 4", scores[3])
+	}
+}
+
+func TestPageRankScores(t *testing.T) {
+	scores := pagerankScores("run-1", []graphcompute.Edge{
+		{From: "a", To: "b"},
+		{From: "b", To: "c"},
+		{From: "c", To: "a"},
+	})
+	if len(scores) != 3 {
+		t.Fatalf("scores = %#v, want 3 nodes", scores)
+	}
+	for _, score := range scores {
+		if math.Abs(score.Score-1.0/3.0) > 1e-6 {
+			t.Fatalf("score = %#v, want about 1/3", score)
 		}
 	}
 }

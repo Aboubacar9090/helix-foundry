@@ -20,6 +20,24 @@ onReset(() => {
   scores.clear();
 });
 
+const demo: Record<string, GraphComputeScore[]> = {
+  degree: [
+    { nodeKey: "a", score: 2, rank: 1 },
+    { nodeKey: "b", score: 1, rank: 2 },
+    { nodeKey: "c", score: 1, rank: 3 },
+  ],
+  pagerank: [
+    { nodeKey: "a", score: 0.4, rank: 1 },
+    { nodeKey: "b", score: 0.35, rank: 2 },
+    { nodeKey: "c", score: 0.25, rank: 3 },
+  ],
+  wcc: [
+    { nodeKey: "a", score: 3, rank: 1 },
+    { nodeKey: "b", score: 3, rank: 2 },
+    { nodeKey: "c", score: 3, rank: 3 },
+  ],
+};
+
 export const graphComputeRoutes: MockRoute[] = [
   {
     method: "POST",
@@ -28,8 +46,12 @@ export const graphComputeRoutes: MockRoute[] = [
       const m = membership(params.workspaceId!, principal.user.id);
       if (isReply(m)) return m;
       if (!body?.loadId) return fail("INVALID_ARGUMENT", "loadId is required");
-      if (body.algorithm !== "degree")
-        return fail("INVALID_ARGUMENT", "algorithm must be degree for now");
+      if (!["degree", "wcc", "pagerank"].includes(body.algorithm))
+        return fail(
+          "INVALID_ARGUMENT",
+          "algorithm must be degree, wcc or pagerank for now",
+        );
+      const table = demo[body.algorithm] ?? demo.degree!;
       const run: GraphComputeRun = {
         id: id("run"),
         workspaceId: params.workspaceId!,
@@ -39,19 +61,15 @@ export const graphComputeRoutes: MockRoute[] = [
         name: body.name ?? body.algorithm,
         status: "succeeded",
         phase: "done",
-        nodeCount: "3",
+        nodeCount: String(table.length),
         edgeCount: "3",
-        topScore: 3,
+        topScore: table[0]?.score ?? 0,
         createdAt: now(),
         startedAt: now(),
         finishedAt: now(),
       };
       runs.set(run.id, run);
-      scores.set(run.id, [
-        { nodeKey: "a", score: 2, rank: 1 },
-        { nodeKey: "b", score: 1, rank: 2 },
-        { nodeKey: "c", score: 1, rank: 3 },
-      ]);
+      scores.set(run.id, table);
       return ok({ run });
     },
   },

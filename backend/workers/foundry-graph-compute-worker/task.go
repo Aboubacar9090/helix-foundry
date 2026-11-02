@@ -20,6 +20,7 @@ import (
 	"go.uber.org/dig"
 
 	"github.com/helixdb/helix-foundry/backend/config"
+	"github.com/helixdb/helix-foundry/backend/graphcompute"
 	"github.com/helixdb/helix-foundry/backend/pkg/id"
 	"github.com/helixdb/helix-foundry/backend/pkg/log"
 	"github.com/helixdb/helix-foundry/backend/ports"
@@ -35,6 +36,9 @@ const (
 	lease          = 2 * time.Minute
 	processTimeout = 90 * time.Second
 	finishTimeout  = 15 * time.Second
+	// edgeLimit bounds one run's edge read; algorithms that need every edge
+	// fail loudly rather than compute on a truncated graph.
+	edgeLimit = 100_000
 )
 
 type Deps struct {
@@ -110,10 +114,6 @@ func (t *Task) process(ctx context.Context, run *model.FoundryGraphComputeRun) {
 			Error:  &message,
 		})
 	}
-	if run.Algorithm != "degree" {
-		fail(fmt.Sprintf("algorithm %q is not implemented yet", run.Algorithm))
-		return
-	}
 	ontology, err := t.db.GetFoundryOntology(ctx, run.WorkspaceID, run.OntologyID)
 	if err != nil {
 		fail("get ontology: " + err.Error())
@@ -133,23 +133,49 @@ func (t *Task) process(ctx context.Context, run *model.FoundryGraphComputeRun) {
 		fail("the load is gone or being deleted")
 		return
 	}
-	query, err := degreeQuery(load.ID)
-	if err != nil {
-		fail("encode degree query: " + err.Error())
-		return
-	}
-	status, body, err := t.graph.ReadQuery(ctx, ontology.TenantID, query)
-	if err != nil {
-		fail("read graph: " + err.Error())
-		return
-	}
-	if status < 200 || status >= 300 {
-		fail(fmt.Sprintf("read graph returned %d: %s", status, truncate(body, 200)))
-		return
-	}
-	scores, edges, err := parseDegree(run.ID, body)
-	if err != nil {
-		fail("parse degree: " + err.Error())
+	var scores []model.FoundryGraphComputeScore
+	var edgeCount int64
+	switch run.Algorithm {
+	case "degree":
+		query, err := degreeQuery(load.ID)
+		if err != nil {
+			fail("encode degree query: " + err.Error())
+			return
+		}
+		body, err := t.readGraph(ctx, ontology.TenantID, query)
+		if err != nil {
+			fail(err.Error())
+			return
+		}
+		scores, edgeCount, err = parseDegree(run.ID, body)
+		if err != nil {
+			fail("parse degree: " + err.Error())
+			return
+		}
+	case "wcc", "pagerank":
+		query, err := edgesQuery(load.ID, edgeLimit)
+		if err != nil {
+			fail("encode edge query: " + err.Error())
+			return
+		}
+		body, err := t.readGraph(ctx, ontology.TenantID, query)
+		if err != nil {
+			fail(err.Error())
+			return
+		}
+		edges, err := parseEdges(body)
+		if err != nil {
+			fail("parse edges: " + err.Error())
+			return
+		}
+		edgeCount = int64(len(edges))
+		if run.Algorithm == "wcc" {
+			scores = wccScores(run.ID, edges)
+		} else {
+			scores = pagerankScores(run.ID, edges)
+		}
+	default:
+		fail(fmt.Sprintf("algorithm %q is not implemented yet", run.Algorithm))
 		return
 	}
 	resultURI, err := t.writeScores(ctx, run.ID, scores)
@@ -164,7 +190,7 @@ func (t *Task) process(ctx context.Context, run *model.FoundryGraphComputeRun) {
 	outcome := model.FoundryGraphComputeOutcome{
 		Status:    model.FoundryGraphComputeSucceeded,
 		NodeCount: int64(len(scores)),
-		EdgeCount: edges,
+		EdgeCount: edgeCount,
 		ResultURI: &resultURI,
 	}
 	if len(scores) > 0 {
@@ -216,6 +242,117 @@ func (t *Task) finish(ctx context.Context, run *model.FoundryGraphComputeRun, ou
 	if err := t.db.FinishFoundryGraphComputeRun(finishCtx, run.ID, t.workerID, outcome); err != nil &&
 		!errors.Is(err, foundrystore.ErrNotFound) {
 		log.From(ctx).Error("finish graph compute run failed", "run", run.ID, "err", err)
+	}
+}
+
+// readGraph runs one read query and returns its body, mapping a non-2xx
+// database answer to an error with a short body.
+func (t *Task) readGraph(ctx context.Context, tenantID string, query []byte) ([]byte, error) {
+	status, body, err := t.graph.ReadQuery(ctx, tenantID, query)
+	if err != nil {
+		return nil, fmt.Errorf("read graph: %w", err)
+	}
+	if status < 200 || status >= 300 {
+		return nil, fmt.Errorf("read graph returned %d: %s", status, truncate(body, 200))
+	}
+	return body, nil
+}
+
+// edgesQuery reads the load's edges with their two ends, bounded by limit.
+func edgesQuery(loadID string, limit int) ([]byte, error) {
+	var source map[string]any = map[string]any{
+		"edges_where": map[string]any{
+			"predicate": map[string]any{
+				"eq": map[string]any{
+					"left":  map[string]any{"property": "foundry_load"},
+					"right": map[string]any{"constant": map[string]any{"string": loadID}},
+				},
+			},
+		},
+	}
+	if limit > 0 {
+		source = map[string]any{
+			"limit": map[string]any{"input": source, "count": map[string]any{"literal": limit}},
+		}
+	}
+	return json.Marshal(map[string]any{
+		"request_type": "read",
+		"query_name":   "graph_edges",
+		"query": map[string]any{
+			"read": map[string]any{
+				"entries": []any{map[string]any{
+					"query": map[string]any{
+						"name": "edges",
+						"root": map[string]any{"edge_properties": map[string]any{"input": source}},
+					},
+				}},
+				"returns": []string{"edges"},
+			},
+		},
+	})
+}
+
+func parseEdges(body []byte) ([]graphcompute.Edge, error) {
+	var raw map[string]json.RawMessage
+	if err := json.Unmarshal(body, &raw); err != nil {
+		return nil, err
+	}
+	var rows []map[string]json.RawMessage
+	if err := json.Unmarshal(raw["edges"], &rows); err != nil {
+		return nil, err
+	}
+	out := make([]graphcompute.Edge, 0, len(rows))
+	for _, row := range rows {
+		from, to := rawID(row["$from"]), rawID(row["$to"])
+		if from == "" || to == "" {
+			continue
+		}
+		out = append(out, graphcompute.Edge{From: from, To: to})
+	}
+	return out, nil
+}
+
+func wccScores(runID string, edges []graphcompute.Edge) []model.FoundryGraphComputeScore {
+	components := graphcompute.Components(edges)
+	sizes := make(map[int]int, len(components))
+	for _, id := range components {
+		sizes[id]++
+	}
+	scores := make([]model.FoundryGraphComputeScore, 0, len(components))
+	for node, id := range components {
+		scores = append(scores, model.FoundryGraphComputeScore{
+			RunID:   runID,
+			NodeKey: node,
+			Score:   float64(sizes[id]),
+		})
+	}
+	sortScores(scores)
+	return scores
+}
+
+func pagerankScores(runID string, edges []graphcompute.Edge) []model.FoundryGraphComputeScore {
+	ranks := graphcompute.PageRank(edges, 0.85, 20)
+	scores := make([]model.FoundryGraphComputeScore, 0, len(ranks))
+	for node, rank := range ranks {
+		scores = append(scores, model.FoundryGraphComputeScore{
+			RunID:   runID,
+			NodeKey: node,
+			Score:   rank,
+		})
+	}
+	sortScores(scores)
+	return scores
+}
+
+func sortScores(scores []model.FoundryGraphComputeScore) {
+	sort.Slice(scores, func(i, j int) bool {
+		if scores[i].Score != scores[j].Score {
+			return scores[i].Score > scores[j].Score
+		}
+		return scores[i].NodeKey < scores[j].NodeKey
+	})
+	for i := range scores {
+		scores[i].Rank = i + 1
 	}
 }
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Database } from "lucide-react";
-import { Button, ButtonLink, DataGrid, EmptyState } from "../../kit";
+import { Button, ButtonLink, DataGrid, EmptyState, Segmented } from "../../kit";
 import { paths } from "../../paths";
 import { useWorkspace } from "../../ui";
 import { useOntology } from "../ontology/scope";
@@ -19,6 +19,14 @@ const COLUMNS = [
   { key: "rank", label: "Rank", type: "integer" },
 ];
 
+type Algorithm = "degree" | "wcc" | "pagerank";
+
+const NAMES: Record<Algorithm, string> = {
+  degree: "Degree",
+  wcc: "Components",
+  pagerank: "PageRank",
+};
+
 /**
  * /explore/:ontologyId/compute: queue a read-only degree computation over
  * the selected load, poll the run and show its ranked scores. The
@@ -29,6 +37,7 @@ export function ComputePage() {
   const { id: ws } = useWorkspace();
   const { id: o, ontology } = useOntology();
   const selection = useLoadSelection();
+  const [algorithm, setAlgorithm] = useState<Algorithm>("degree");
   const [runId, setRunId] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
   const [startError, setStartError] = useState<string | null>(null);
@@ -55,8 +64,8 @@ export function ComputePage() {
     try {
       const created = await startGraphCompute(ws, o, {
         loadId: load.id,
-        algorithm: "degree",
-        name: "Degree",
+        algorithm,
+        name: NAMES[algorithm],
         clientToken: crypto.randomUUID(),
       });
       setRunId(created.run.id);
@@ -101,19 +110,34 @@ export function ComputePage() {
         <section aria-labelledby="compute-degree">
           <h2 id="compute-degree">Degree</h2>
           <p>
-            Queues a read-only degree computation over the selected load. The
-            worker reads only that load’s edges and never writes the graph.
+            Queues a read-only computation over the selected load. The worker
+            reads only that load’s edges and never writes the graph.
+          </p>
+          <p>
+            <Segmented
+              label="Algorithm"
+              value={algorithm}
+              options={[
+                { value: "degree", label: "Degree" },
+                { value: "pagerank", label: "PageRank" },
+                { value: "wcc", label: "Components" },
+              ]}
+              onChange={(value) => {
+                setAlgorithm(value as Algorithm);
+                setRunId(null);
+              }}
+            />
           </p>
           <p>
             <Button onClick={() => void start()} disabled={starting}>
-              {starting ? "Queueing…" : "Queue degree"}
+              {starting ? "Queueing…" : `Queue ${NAMES[algorithm]}`}
             </Button>
           </p>
           {startError && <p role="alert">{startError}</p>}
           {run && (
             <p>
-              Run <span className="hf-mono">{run.id}</span> · {run.status} (
-              {run.phase}) · {Number(run.nodeCount ?? 0)} nodes ·{" "}
+              Run <span className="hf-mono">{run.id}</span> · {run.algorithm} ·{" "}
+              {run.status} ({run.phase}) · {Number(run.nodeCount ?? 0)} nodes ·{" "}
               {Number(run.edgeCount ?? 0)} edges
             </p>
           )}

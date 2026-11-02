@@ -27,8 +27,10 @@ func (s *Service) StartGraphCompute(ctx context.Context, req *foundryv1.StartGra
 	if req.GetLoadId() == "" {
 		return nil, status.Error(codes.InvalidArgument, "load_id is required")
 	}
-	if req.GetAlgorithm() != "degree" {
-		return nil, status.Error(codes.InvalidArgument, "algorithm must be degree for now")
+	switch req.GetAlgorithm() {
+	case "degree", "wcc", "pagerank":
+	default:
+		return nil, status.Error(codes.InvalidArgument, "algorithm must be degree, wcc or pagerank for now")
 	}
 	if len(req.GetClientToken()) > maxClientTokenLength {
 		return nil, status.Errorf(codes.InvalidArgument, "client_token is at most %d characters", maxClientTokenLength)
